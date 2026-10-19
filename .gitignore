@@ -1,0 +1,17 @@
+# Python / local conversion outputs
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# User MIDI and generated score files are not bundled with this public project
+*.mid
+*.midi
+*.seq
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
