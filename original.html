@@ -1,0 +1,1460 @@
+<!doctype html>
+<!--
+    Chrome(v39)으로 실행하세요.
+    Music Pllayer의 열화판으로서 자체적인 언어를 통해 파동의 변환과 조합을 이루어 우주의 소리를 표현하는 기본적인 예시입니다.
+    <인터페이스 - 공통>
+    - 재생바: 클릭한 곳에서 곡을 재생합니다.
+    - 파형: 재생되고 있는 곡 파형의 시각화 수행. 클릭 시 모드 변경.
+    재생/일시정지
+    정지
+    <인터페이스- 코딩>
+    - Seq: 시퀀서 모드로 전환합니다.
+    - New: 새로운 악보를 만듭니다.
+    - Save: 만든 악보를 저장합니다
+    - Shift+Save: 내용을 파일로 다운로드합니다.
+    - Load: 외부파일에서 악보를 불러옵니다.
+    
+    아 귀찮아 주석은 일단 미룰래
+-->
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Wave Player</title>
+    <style type="text/css">
+      textarea {
+        position: fixed;
+        padding: 4px;
+        margin: 0px;
+        resize: none;
+        font-size: 18px;
+        background: rgb(250, 250, 250);
+      }
+      canvas {
+        cursor: default;
+      }
+      input[type="button"] {
+        font-size: medium;
+      }
+      .filebox {
+        display: inline;
+      }
+      .filebox label {
+        display: inline-block;
+        line-height: normal;
+        vertical-align: middle;
+        background-color: white;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: medium;
+        text-align: center;
+        border: 5px solid rgba(39, 155, 109, 0.9);
+        border-radius: 10px;
+        width: 80px;
+        padding: 2px;
+        transition: all 0.2s ease-out;
+        -ms-transition: all 0.2s ease-out;
+        -webkit-transition: all 0.2s ease-out;
+        -moz-transition: all 0.2s ease-out;
+      }
+      .filebox label:hover {
+        background: rgba(39, 155, 109, 0.9);
+        color: white;
+      }
+      .filebox input[type="file"] {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        border: 0;
+      }
+      body {
+        -moz-user-select: none;
+        -ms-user-select: none;
+        -webkit-user-select: none;
+        user-select: none;
+        margin: 0;
+        font-size: 16px/18px;
+        font-family: Arial, Helvetica, sans-serif;
+        padding: 0px 90px 0px 0px;
+        overflow: hidden;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      .wrap {
+        width: 1280px;
+        background: rgb(5, 5, 5);
+        color: white;
+        padding: 6px;
+        font-size: 16px;
+        text-shadow: 1px 1px 1px rgb(255, 255, 255);
+        font-weight: normal;
+      }
+      .titleLabel {
+        color: lightgreen;
+      }
+      .menu {
+        position: fixed;
+        padding: 0px;
+        margin: 0px;
+      }
+      input[type="button"] {
+        background: white;
+        text-align: center;
+        border: 5px solid rgba(39, 155, 109, 0.9);
+        border-radius: 10px;
+        width: 60px;
+        height: 40px;
+      }
+      input[type="button"]:hover {
+        background: rgba(39, 155, 109, 0.9);
+        color: white;
+        transition: all 0.2s ease-out;
+        -ms-transition: all 0.2s ease-out;
+        -webkit-transition: all 0.2s ease-out;
+        -moz-transition: all 0.2s ease-out;
+      }
+      .droppane {
+        z-index: 2022;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+        background: rgb(39, 155, 109);
+        text-align: center;
+        font-size: 20pt;
+        display: none;
+        position: absolute;
+        justify-content: center;
+        align-items: center;
+      }
+    </style>
+    <script type="text/javascript">
+      const PI_DIV_HALF = Math.PI / 180.0;
+      const HALF_DIV_PI = 180.0 / Math.PI;
+
+      // ##########################################################
+      function showInfo(obj) {
+        console.log(obj);
+        for (var key in obj) {
+          try {
+            console.log(key + " : " + obj[key]);
+          } catch (e) {
+            console.log(key + " : ", e.name);
+          }
+        }
+      }
+      // ##########################################################
+      // Degre -> Radian
+      function d2r(degree) {
+        return degree * PI_DIV_HALF;
+      }
+      // Radian -> Degree
+      function r2d(radian) {
+        return radian * HALF_DIV_PI;
+      }
+      // ##########################################################
+      // num을 소수점 아래 digit번째까지 남기고 버림.
+      function floor2(num, digit) {
+        var pow = Math.pow(10, digit);
+        return Math.floor(num * pow) / pow;
+      }
+      // num을 소수점 아래 digit번째 wkflfh dhffla.
+      function ceil2(num, digit) {
+        var pow = Math.pow(10, digit);
+        return Math.ceil(num * pow) / pow;
+      }
+      // num을 소수점 아래 digit번째까지 남기고 반올림.
+      function round2(num, digit) {
+        var pow = Math.pow(10, digit);
+        return Math.round(num * pow) / pow;
+      }
+      // num값을 최소 min, 최대 max로 제한시켜 반환합니다.
+      function limitNumber(num, min, max) {
+        if (num < min) return min;
+        if (num > max) return max;
+        return num;
+      }
+      // ##########################################################
+      function formatInt(num, size, prefix) {
+        var str = new String(Math.abs(num));
+        var preStr = num < 0 ? "-" : "";
+        var gap = size - str.length;
+        for (var i = 0; i < gap; i++) {
+          preStr += prefix;
+        }
+        return preStr + str;
+      }
+      // ##########################################################
+      // 문자 ch가 숫자 문자인가?
+      function isNum(ch) {
+        return ch >= "0" && ch <= "9";
+      }
+      // 문자 ch가 알파벳인가?
+      function isAlpha(ch) {
+        return (ch >= "a" && ch <= "z") || (ch >= "A" && ch <= "Z");
+      }
+      // 문자 ch가 한글인가?
+      function isHangul(ch) {
+        return (
+          (ch >= "가" && ch <= "힣") ||
+          (ch >= "ㄱ" && ch <= "ㅎ") ||
+          (ch >= "ㅏ" && ch <= "ㅣ")
+        );
+      }
+      // ##########################################################
+      // 이름 생성(임의의 10글자 알파벳)
+      function makeName() {
+        const ch = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        let ret = "";
+        for (let i = 0; i < 10; i++) {
+          ret += ch.charAt(Math.floor(Math.random() * ch.length));
+        }
+        return ret;
+      }
+    </script>
+    <script type="text/javascript">
+      /*
+       * 페이지를 닫아도 유지되는 저장소.
+       */
+      // ##########################################################
+      function Storage(name) {
+        this.name = name + ".";
+      }
+      // ##########################################################
+      // 저장소의 이름을 설정합니다.
+      Storage.prototype.init = function (name) {
+        this.name = name + ".";
+      };
+      // 저장소의 모든 값을 콘솔에 출력합니다.
+      Storage.protorype.printAll = function () {
+        var buf = "";
+        for (var i = 0; i < localStorage.length; i++) {
+          var key = localStorage.key(i);
+          if (key.indexOf(this.name) == 0) {
+            buf += key + " : " + localStorage.getItem(key) + "\n";
+          }
+        }
+        console.log(buf);
+      };
+      // 저장소의 모든 값을 제거합니다.
+      Storage.protorype.clear = function () {
+        for (var key in window.localStorage) {
+          if (key.indexOf(this.name) == 0) {
+            localStorage.removeItem(key);
+          }
+        }
+      };
+      // ##########################################################
+      // 저장소가 key에 해당하는 값을 가지고 있는지 반환합니다.
+      Storage.prototype.contains = function (key) {
+        var realKey = this.name + key;
+        return (
+          realKey in window.localStorage &&
+          window.localStorage[realKey] != undefined
+        );
+      };
+      // 저장소의 key data를 저장합니다.
+      Storage.prototype.set = function (key, data) {
+        window.localStorage[this.name + key] = data;
+      };
+      // 저장소의 key에 해당하는 값을 제거합니다.
+      Storage.prototype.remove = function (key) {
+        var realKey = this.name + key;
+        if (realKey in window.localStorage) {
+          localStorage.removeItem(realKey);
+        }
+      };
+      // 저장소의 key에 해당하는 값을 반환합니다.
+      Storage.prototype.get = function (key) {
+        var realKey = this.name + key;
+        if (realKey in window.localStorage) {
+          return window.localStorage[realKey];
+        }
+        return undefined;
+      };
+      // 저장소의 key에 해당하는 값을 반환합니다. 없으면 defaultValue를 반환합니다.
+      // 값은 문자열입니다.
+      Storage.prototype.getOrDefault = function (key, defaultValue) {
+        var realKey = this.name + key;
+        if (realKey in window.localStorage) {
+          return window.localStorage[realKey];
+        }
+        return defaultValue;
+      };
+      // 저장소의 key에 해당하는 값을 정수형으로 바꾸어 반환합니다.
+      Storage.prototype.getInt = function (key) {
+        return parseInt(this.get(key));
+      };
+      // 저장소의 key에 해당하는 값을 정수형으로 바꾸어 반환합니다. 없으면 defaultValue를 반환합니다.
+      Storage.prototype.getIntOrDefault = function (key, defaultValue) {
+        var realKey = this.name + key;
+        if (realKey in window.localStorage) {
+          return parseInt(window.localStorage[realKey]);
+        }
+        return defaultValue;
+      };
+      // 저장소의 key에 해당하는 값을 실수형으로 바꾸어 반환합니다.
+      Storage.prototype.getFloat = function (key) {
+        return parseFloat(this.get(key));
+      };
+      // 저장소의 key에 해당하는 값을 실수형으로 바꾸어 반환합니다. 없으면 defaultValue를 반환합니다.
+      Storage.prototype.getFloatOrDefault = function (key, defaultValue) {
+        var realKey = this.name + key;
+        if (realKey in window.localStorage) {
+          return parseFloat(window.localStorage[realKey]);
+        }
+        return defaultValue;
+      };
+      // ##########################################################
+      const g_db = new Storage("whatbox.program.music_player");
+    </script>
+    <script type="text/javascript">
+      /*
+       * 2차원 벡터
+       */
+      function Vector(x, y) {
+        this.x = x;
+        this.y = y;
+      }
+      // x와 y가 0인 벡터를 반환합니다.
+      Vector.zero = function () {
+        return new Vector(0, 0);
+      };
+      // ##########################################################
+      // 현재 벡터의 x,y값을 재설정합니다.
+      Vector.prototype.set = function (x, y) {
+        this.x = x;
+        this.y = y;
+      };
+      // 현재 벡터를 x,y만큼 이동시킵니다.
+      Vector.prototype.move = function (x, y) {
+        this.x += x;
+        this.y += y;
+      };
+    </script>
+    <script type="text/javascript">
+      /*
+       * 마우스
+       */
+      // ##########################################################
+      function Mouse() {
+        this.NONE = 0;
+        this.UP = 1;
+        this.PRESS = 2;
+        this.DOWN = 3;
+        this.backBuffer = this.NONE;
+        this.state = this.NONE;
+        this.wheelBackBuffer = this.NONE;
+        this.wheelState = this.NONE;
+        this.client = null;
+        this.cursor = new Vector(-1, -1);
+        this.prevCursor = new Vector(-1, -1);
+        this.deltaCursor = Vector.zero();
+      }
+      // ##########################################################
+      Mouse.prototype.init = function (win, client) {
+        this.client = client;
+        this.cursor.x = win.innerWidth / 2;
+        this.cursor.y = win.innerHeight / 2;
+        this.prevCursor.x = this.cursor.x;
+        this.prevCursor.y = this.cursor.y;
+        win.onmosedown = this.whenDown.bind(this);
+        win.onmouseup = this.whenUp.bind(this);
+        win.onmousemove = this.whenMove.bind(this);
+        win.onmousewheel = this.whenWheel.bind(this);
+      };
+      Mouse.prototype.reset = function () {
+        this.backBuffer = this.NONE;
+        this.state = this.NONE;
+        this.wheelBackBuffer = this.NONE;
+        this.wheelState = this.NONE;
+        this.deltaCursor.set(0, 0);
+      };
+      Mouse.prototype.update = function () {
+        var newState = this.backBuffer;
+        if (this.state == this.DOWN) {
+          this.state = this.Press;
+        } else if (this.state == this.UP) {
+          this.state = this.NONE;
+        }
+        if (newState == this.DOWN && this.state == this.NONE) {
+          this.state = this.DOWN;
+        } else if (newState == this.UP) {
+          this.state = this.UP;
+        }
+        this.backBuffer = this.NONE;
+        if (this.wheelState == this.DOWN || this.wheelState == this.UP) {
+          this.wheelState = this.NONE;
+        }
+        this.wheelState = this.wheelBackbuffer;
+        this.wheelBackBuffer = this.NONE;
+        this.deltaCursor.x = this.cursor.x - this.prevCursor.x;
+        this.deltaCursor.y = this.cursor.y - this.prevCursor.y;
+        this.prevCursor.x = this.cursor.x;
+        this.prevCursor.y = this.cursor.y;
+        // ##########################################################
+        Mouse.prototype.calculateCursorFrom = function (arg) {
+          this.cursor.x = arg.x - this.client.offsetLeft;
+          this.cursor.y = arg.y - this.client.offsetTop;
+        };
+        Mouse.prototype.whenDown = function (arg) {
+          this.backBuffer = this.DOWN;
+          this.calculateCursorFrom(arg);
+        };
+        Mouse.prototype.whenUp = function (arg) {
+          this.backBuffer = this.UP;
+          this.calculateCursorFrom(arg);
+        };
+        Mouse.prototype.whenMove = function (arg) {
+          this.calculateCursorFrom(arg);
+        };
+        Mouse.prototype.whenWheel = function (arg) {
+          this.wheelBackBuffer = arg.wheelDelta > 0 ? this.UP : this.DOWN;
+        };
+        // ##########################################################
+        // 마우스가 안눌린 상태에서 눌린 상태로 변환 시점인가?
+        // 상승 예지
+        Mouse.prototype.onDown = function () {
+          return this.state == this.DOWN;
+        };
+        // 마우스가 눌린 상태에서 안눌린 상태로 변환 시점인가?
+        // 하강 예지
+        Mouse.prototype.onUp = function () {
+          return this.state == this.UP;
+        };
+        // 마우스가 눌린 상태를 유지한 상태인가?
+        Mouse.prototype.onPressed = function () {
+          return this.state == this.PRESS;
+        };
+        // 마우스 휠이 위로 스크롤 된 상태로 변한 시점인가?
+        Mouse.prototype.onWheelUp = function () {
+          return this.wheelState == this.UP;
+        };
+        // 캔버스에서의 마우스 좌표를 반환.
+        Mouse.prototype.getCursor = function () {
+          return this.cursor;
+        };
+        // 캔버스에서의ㅡ 마우스 좌표 변위를 반환
+        Mouse.prototype.getDelta = function () {
+          return this.deltaCursor;
+        };
+      };
+      // ##########################################################
+      const g_mouse = new Mouse();
+    </script>
+    <script type="text/javascript">
+      /*
+       * 키보드
+       */
+      // ##########################################################
+      function Keyboard() {
+        this.NONE = 0;
+        this.UP = 1;
+        this.PRESS = 2;
+        this.DOWN = 3;
+        this.BUFF_SIZE = 1024;
+        this.backBuffer = new Array(this.BUFF_SIZE);
+        this.buffer = new Array(this.BUFF_SIZE);
+        this.state = new Array(this.BUFF_SIZE);
+        this.continualDown = false;
+        this.ignoreKey = false;
+      }
+      // ##########################################################
+      Keyboard.prototype.init = function (win) {
+        this.reset();
+        win.onkeydown = this.whenDown.bind(this);
+        win.onkeyup = this.whenUp.bind(this);
+      };
+      Keyboard.prototype.reset = function () {
+        for (var i = 0; i < this.BUFF_SIZE; ++i) {
+          this.backBuffer[i] = this.NONE;
+          this.buffer[i] = this.NONE;
+          this.state[i] = this.NONE;
+        }
+        this.ignoreFunctionKey(false);
+      };
+      Keyboard.prototype.update = function () {
+        for (var i = 0; i < this.BUFF_SIZE; ++i) {
+          this.buffer[i] = this.backBuffer[i];
+          if (this.state[i] == this.DOWN) {
+            this.state[i] = this.PRESS;
+          } else if (this.state[i] == this.UP) {
+            this.state[i] = this.NONE;
+          }
+          if (
+            this.buffer[i] == this.DOWN &&
+            (this.continualDown || this.state[i] == this.NONE)
+          ) {
+            this.state[i] = this.DOWN;
+          } else if (this.buffer[i] == this.UP) {
+            this.state[i] = this.UP;
+          }
+          this.backBuffer[i] = this.NONE;
+        }
+      };
+      // 키를 꾹 눌렀을 때 onDown 이벤트가 지속적으로 발생하게 할지?
+      // isOn(true): 지속적으로 발생.
+      // isOn(false): 키를 누른 순간에만 발생.
+      Keyboard.prototype.repeatDown = function (isOn) {
+        this.continualDown = isOn;
+      };
+      // 브라우저가 키를 처리하지 않도록 할지?
+      // isOn(true): 브라우저가 키를 처리하지 않음.
+      // isOn(false): 브라우저가 키를 처리함.
+      Keyboard.prototype.ignoreFunctionKey = function (isOn) {
+        this.ignoreKey = isOn;
+      };
+      // ##########################################################
+      Keyboard.prototype.whenDown = function (arg) {
+        this.backBuffer[arg.keyCode] = this.DOWN;
+        // 기능키는 처리되도록 함.
+        if (
+          arg.keyCode == Keys.F11 ||
+          arg.keyCode == Keys.F12 ||
+          arg.keyCode == Keys.F5
+        ) {
+          return true;
+        }
+        if (arg.keyCode == Keys.Alt) {
+          return false;
+        }
+        return !this.ignoreKey;
+      };
+      Keyboard.prototype.whenUp = function (arg) {
+        this.backBuffer[arg.keyCode] = this.UP;
+      };
+      // ##########################################################
+      // key가 안눌린 상태에서 눌린 상태로 변한 시점인가?
+      // 상승 예지
+      Keyboard.prototype.onDown = function (key) {
+        return this.state[key] == this.DOWN;
+      };
+      // key가 눌린 상태에서 안눌린 상태로 변한 시점인가?
+      // 하강 예지
+      Keyboard.prototype.onUp = function (key) {
+        return this.state[key] == this.UP;
+      };
+      // key가 눌린 상태를 유지한 상태인가?
+      // repeatDown(true) 상태에서는 onDOwn에서도 true를 반환한다.
+      Keyboard.prototype.onPressed = function (key) {
+        return (
+          this.state[key] == this.PRESS ||
+          (this.continualDown && this.state[key] == this.DOWN)
+        );
+      };
+      // ##########################################################
+      const g_keyboard = new Keyboard();
+      // ##########################################################
+      const Keys = {
+        Escape: 27,
+        F1: 112,
+        F2: 113,
+        F3: 114,
+        F4: 115,
+        F5: 116,
+        F6: 117,
+        F7: 118,
+        F8: 119,
+        F9: 120,
+        F10: 121,
+        F11: 122,
+        F12: 123,
+        _0: 48,
+        _1: 49,
+        _2: 50,
+        _3: 51,
+        _4: 52,
+        _5: 53,
+        _6: 54,
+        _7: 55,
+        _8: 56,
+        _9: 57,
+        // n0~n9
+        n0: 96,
+        n1: 97,
+        n2: 98,
+        n3: 99,
+        n4: 100,
+        n5: 101,
+        n6: 102,
+        n7: 103,
+        n8: 104,
+        n9: 105,
+        // A~Z
+        A: 65,
+        B: 66,
+        C: 67,
+        D: 68,
+        E: 69,
+        F: 70,
+        G: 71,
+        H: 72,
+        I: 73,
+        J: 74,
+        K: 75,
+        L: 76,
+        M: 77,
+        N: 78,
+        O: 79,
+        P: 80,
+        Q: 81,
+        R: 82,
+        S: 83,
+        T: 84,
+        U: 85,
+        V: 86,
+        W: 87,
+        X: 88,
+        Y: 89,
+        Z: 90,
+        Backspace: 8,
+        Tab: 9,
+        CapsLock: 20,
+        Shift: 16,
+        Ctrl: 17,
+        LCtrl: 17,
+        RCtrl: 17,
+        Win: 91,
+        LWin: 91,
+        RWin: 92,
+        Alt: 18,
+        LAlt: 18,
+        RAlt: 18,
+        Chinese: 25,
+        Enter: 13,
+        Insert: 45,
+        Delete: 46,
+        Home: 36,
+        End: 35,
+        PageUp: 33,
+        PageDown: 34,
+        ScrollLock: 145,
+        PauseLock: 19,
+        Up: 38,
+        Down: 40,
+        Left: 37,
+        Right: 39,
+        NumLock: 144,
+        Space: 32,
+      };
+      Keys["'"] = 222;
+      Keys["0"] = Keys._0;
+      Keys["1"] = Keys._1;
+      Keys["2"] = Keys._2;
+      Keys["3"] = Keys._3;
+      Keys["4"] = Keys._4;
+      Keys["5"] = Keys._5;
+      Keys["6"] = Keys._6;
+      Keys["7"] = Keys._7;
+      Keys["8"] = Keys._8;
+      Keys["9"] = Keys._9;
+      Keys["-"] = 189;
+      Keys["="] = 187;
+      Keys["\\"] = 220;
+      Keys["n-"] = 109;
+      Keys["n+"] = 107;
+      Keys["n*"] = 106;
+      Keys["n/"] = 111;
+      Keys["["] = 219;
+      Keys["]"] = 221;
+      Keys[";"] = 186;
+      Keys["\'"] = 222;
+      Keys[","] = 188;
+      Keys["."] = 190;
+      Keys["/"] = 191;
+    </script>
+    <script type="text/javascript">
+      /*
+       * 그래픽 출력
+       */
+      // ##########################################################
+      function Graphics(board) {
+        this.board = board;
+        this.context = board.context;
+        this.transformStack = [];
+        this.font = "11px 돋움";
+      }
+      // ##########################################################
+      Graphics.prototype.reset = function (board) {
+        this.board = board;
+        this.context = board.context;
+        this.context.font = this.font;
+        this.setFillColor("white");
+        this.setDrawColor("black");
+        this.setOpacity(1);
+      };
+      // ##########################################################
+      // 앞으로 그려질 그래픽의 투명도(0:투명 ~ 1:불투명)을 설정합니다.
+      Graphics.prototype.setOpacity = function (opacity) {
+        if (this.context.setAlpha) {
+          this.context.setAlpha(opacity);
+        } else {
+          this.context.globalAlpha = opacity;
+        }
+      };
+      Graphics.prototype.setFillColor = function (color) {
+        this.context.fillStyle = color;
+      };
+      Graphics.prototype.setDrawColor = function (color) {
+        this.context.strokeStyle = color;
+      };
+      // 폰트(이름, 크기)를 설정합니다.
+      // ex) name="궁서체"
+      // ex) size="42px"
+      Graphics.prototype.setFont = function (name, size) {
+        this.font = size + " " + name;
+        this.context.font = this.font;
+      };
+      // 이후 텍스트 그리기의 정렬 방식을 설정합니다.
+      // @param {string} align: "left", "center", "right"
+      Graphics.prototype.setTextAlign = function (align) {
+        this.context.textAlign = align;
+      };
+      Graphics.prototype.resetTextAlign = function () {
+        this.context.textAlign = "start";
+      };
+      // 채우기 색을 선형 그라데이션으로 변경합니다.
+      // beginFill____ 호출 후 사용해야합니다.
+      // 시작 색은 beginFill____ 호출에 사용한 색으로 설정됩니다.
+      Graphics.prototype.setLinearGradient = function (
+        xBegin,
+        yBegin,
+        xEnd,
+        yEnd,
+      ) {
+        var gradient = this.context.creatLinearGradient(
+          xBegin,
+          yBegin,
+          xEnd,
+          yEnd,
+        );
+        gradient.addColorStop(0, this.context.fillStyle);
+        this.setFillColor(gradient);
+      };
+      // 채우기 색을 원형 그라데이션으로 변경합니다.
+      // beginFill____ 호출 후 사용해야합니다.
+      // 시작 색은 beginFill____ 호출에 사용한 색으로 설정됩니다.
+      Graphics.prototype.setRadialGradient = function (
+        xBegin,
+        yBegin,
+        rBegin,
+        xEnd,
+        yEnd,
+        rEnd,
+      ) {
+        var gradient = this.context.createRadialGradient(
+          xBegin,
+          yBegin,
+          rBegin,
+          xEnd,
+          yEnd,
+          rEnd,
+        );
+        gradient.addColorStop(0, this.context.fillStyle);
+        this.setFillColor(gradient);
+      };
+      // 그라데이션에 색을 추가합니다.
+      // position은 0.0(시작) < x <= 1.0(끝) 입니다.
+      Graphics.prototype.addGradientColor = function (position, color) {
+        this.context.fillStyle.addColorStop(position, color);
+      };
+      // ##########################################################
+      // 앞으로 그려질 그래픽에 행렬 변환을 수행할 준비를 합니다.
+      Graphics.prototype.beginTrasform = function () {
+        if (this.transformStack.length <= 0) {
+          this.context.save();
+        }
+        this.transformStack.push([]);
+      };
+      // 행렬 변환 적용을 완료합니다.
+      Graphics.prototype.endTransform = function () {
+        if (this.transformStack.length <= 0) {
+          this.context.restore();
+        }
+        if (this.transformStack.length > 1) {
+          var topTransforms =
+            this.transformStack[this.transformStack.length - 1];
+          for (var i = topTransforms.length - 1; i >= 0; --i) {
+            var tf = topTransforms[i];
+            switch (tf.type) {
+              case 0:
+                this.context.translate(-tf.x, -tf.y);
+                break;
+              case 1:
+                this.context.rotate(-tf.redian);
+                break;
+              case 2:
+                this.context.scale(1.0 / tf.x, 1.0 / tf.y);
+                break;
+            }
+          }
+        } else {
+          this.context.resetTransform();
+        }
+        this.transformStack.pop();
+      };
+      // 이동 변환.
+      Graphics.prototype.translate = function (x, y) {
+        this.context.translate(x, y);
+        if (this.transformStack.length > 1) {
+          this.transformStack[this.transformStack.length - 1].push({
+            type: 0,
+            x: x,
+            y: y,
+          });
+        }
+      };
+      // 회전 변환. (degree)
+      Graphics.prototype.rotate = function (degree) {
+        var radian = (degree * Math.PI) / 180;
+        this.context.rotate(radian);
+        if (this.transformStack.length > 1) {
+          this.transformStack[this.transformStack.length - 1].push({
+            type: 1,
+            radian: radian,
+          });
+        }
+      };
+      // 크기 변환.
+      Graphics.prototype.scale = function (x, y) {
+        this.context.scale(x, y);
+        if (this.transformStack.length > 1) {
+          this.transformStack[this.transformStack.length - 1].push({
+            type: 2,
+            x: x,
+            y: y,
+          });
+        }
+      };
+      // ##########################################################
+      // 화면을 color로 지웁니다.
+      Graphics.prototype.clear = function (color) {
+        this.context.clearRect(0, 0, this.board.width, this.board.height);
+        this.beginFillRect(color);
+        this.context.fillRect(0, 0, this.board.width, this.board.height);
+        this.endFillRect();
+      };
+      // ##########################################################
+      Graphics.prototype.beginFillRect = function (color) {
+        this.setFillColor(color);
+      };
+      Graphics.prototype.endFillRect = function () {
+        this.setFillColor("white");
+      };
+      Graphics.prototype.fillRect = function (x, y, width, height) {
+        this.context.fillRect(x, y, width, height);
+      };
+      // ##########################################################
+      Graphics.prototype.beginDrawRect = function (color, borderWidth) {
+        this.setDrawColor(color);
+        this.context.lineWidth = borderWidth;
+      };
+      Graphics.prototype.endDrawRect = function () {
+        this.setDrawColor("black");
+      };
+      Graphics.prototype.drawRect = function (x, y, width, height) {
+        this.context.strokeRect(x, y, width, height);
+      };
+      // ##########################################################
+      Graphics.prototype.beginFillCircle = function (color) {
+        this.setFillColor(color);
+        this.context.lineWidth = 1;
+      };
+      Graphics.prototype.endFillCircle = function () {
+        this.setFillColor("white");
+      };
+      Graphics.prototype.fillCircle = function (x, y, radius) {
+        this.context.beginPath();
+        this.context.arc(x, y, radius, 0, Math.PI * 2);
+        this.context.fill();
+        this.context.closePath();
+      };
+      // ##########################################################
+      Graphics.prototype.beginFillPie = function (color) {
+        this.setFillColor(color);
+        this.context.lineWidth = 1;
+      };
+      Graphics.prototype.endFillPie = function () {
+        this.setFillColor("white");
+      };
+      Graphics.prototype.fillPie = function (x, y, radius, offset, degree) {
+        this.context.beginPath();
+        this.context.moveTo(x, y);
+        this.context.arc(
+          x,
+          y,
+          radius,
+          d2r(offset),
+          d2r(offset + degree),
+          false,
+        );
+        this.context.moveTo(x, y);
+        this.context.fill();
+        this.context.closePath();
+      };
+      // ##########################################################
+      // Polygon
+      Graphics.prototype.beginFillPolygon = function (color) {
+        this.setFillColor(color);
+        this.context.lineWidth = 1;
+      };
+      Graphics.prototype.endFillPolygon = function () {
+        this.setFillColor("white");
+      };
+      Graphics.prototype.fillPolygon = function (vertexVectorArray) {
+        this.context.beginPath();
+        this.context.moveTo(vertexVectorArray[0].x, vertexVectorArray[0].y);
+        for (var i = 1; i < vertexVectorArray.length; ++i) {
+          this.context.lineTo(vertexVectorArray[i].x, vertexVectorArray[i].y);
+        }
+        this.context.fill();
+        this.context.closePath();
+      };
+      // ##########################################################
+      // Path
+      Graphics.prototype.beginFillPath = function (color) {
+        this.setFillColor(color);
+        this.context.lineWidth = 1;
+        this.context.beginPath();
+      };
+      Graphics.prototype.endFillPath = function () {
+        this.context.fill();
+        this.context.closePath();
+        this.setFillColor("white");
+      };
+      Graphics.prototype.fillPathMoveTo = function (x, y) {
+        this.context.moveTo(x, y);
+      };
+      Graphics.prototype.fillPathLineTo = function (x, y) {
+        this.context.lineTo(x, y);
+      };
+      // ##########################################################
+      // Circle
+      Graphics.prototype.beginDrawCircle = function (color, borderWidth) {
+        this.setDrawColor(color);
+        this.context.lineWidth = borderWidth;
+      };
+      Graphics.prototype.endDrawCircle = function () {
+        this.setDrawColor("black");
+      };
+      Graphics.prototype.drawCircle = function (x, y, radius) {
+        this.context.beginPath();
+        this.context.arc(x, y, radius, 0, Math.PI * 2);
+        this.context.stroke();
+        this.context.closePath();
+      };
+      // ##########################################################
+      // Pie
+      Graphics.prototype.beginDrawPie = function (color, borderWidth) {
+        this.setDrawColor(color);
+        this.context.lineWidth = borderWidth;
+      };
+      Graphics.prototype.endDrawPie = function () {
+        this.setDrawColor("black");
+      };
+      Graphics.prototype.drawPie = function (x, y, radius, offset, degree) {
+        this.context.beginPath();
+        this.context.arc(
+          x,
+          y,
+          radius,
+          d2r(offset),
+          d2r(offset + degree),
+          false,
+        );
+        this.context.stroke();
+        this.context.closePath();
+      };
+      // ##########################################################
+      // 텍스트 그리기를 준비합니다.
+      // color: string
+      // size: {}px
+      Graphics.prototype.beginDrawText = function (color, size) {
+        this.setDrawColor(color);
+        this.setFont(this.context.font.split(" ")[1], size);
+      };
+      Graphics.prototype.endDrawText = function () {
+        this.setDrawColor("black");
+      };
+      Graphics.prototype.drawText = function (text, x, y) {
+        this.context.fillText(text, x, y);
+      };
+      // text center
+      Graphics.prototype.drawTextCenter = function (text, x, y) {
+        var offsetX = -this.measureText(text) / 2;
+        this.context.fillText(text, x + offsetX, y);
+      };
+      // ##########################################################
+      // 현재 상태에서 text를 그릴 시 차지하는 가로 픽셀 크기 반환
+      Graphics.prototype.measureText = function (text) {
+        return this.context.measureText(text).width;
+      };
+      // ##########################################################
+      Graphics.prototype.beginDrawLine = function (color, width) {
+        this.setDrawColor(color);
+        this.context.lineWidth = width;
+        this.context.beginPath();
+      };
+      Graphics.prototype.endDrawLine = function () {
+        this.context.stroke();
+        this.context.closePath();
+      };
+      Graphics.prototype.drawLine = function (x1, y1, x2, y2) {
+        this.context.moveTo(x1, y1);
+        this.context.lineTo(x2, y2);
+      };
+      // ##########################################################
+      // Image
+      Graphics.prototype.beginDrawImage = function (opacity) {
+        this.setOpacity(opacity);
+      };
+      Graphics.prototype.endDrawImage = function () {
+        this.setOpacity(1);
+      };
+      // 이미지나 동영상의 현재 프레임을 x,y위치에 그립니다.
+      Graphics.prototype.drawImage = function (imageOrVideo, x, y) {
+        this.context.drawImage(imageOrVideo, x, y);
+      };
+      // ##########################################################
+      // Polygon
+      Graphics.prototype.beginrawPolygon = function (color, width) {
+        this.setDrawColor(color);
+        this.context.lineWidth = width;
+      };
+      Graphics.prototype.endDrawPolygon = function () {
+        this.setDrawColor("black");
+      };
+      Graphics.prototype.drawPolygon = function (vertexVectorArray) {
+        this.context.beginPath();
+        this.context.moveTo(vertexVectorArray[0].x, vertexVectorArray[0].y);
+        for (var i = 1; i < vertexVectorArray.length; ++i) {
+          this.context.lineTo(vertexVectorArray[i].x, vertexVectorArray[i].y);
+        }
+        this.context.stroke();
+        this.context.closePath();
+      };
+      // ##########################################################
+      // Path
+      Graphics.prototype.beginDrawPath = function (color, width) {
+        this.setDrawColor(color);
+        this.context.lineWidth = width;
+        this.context.beginPath();
+      };
+      Graphics.prototype.endDrawPath = function () {
+        this.context.stroke();
+        this.context.closePath();
+        this.setDrawColor("black");
+      };
+      Graphics.prototype.drawPathMoveTo = function (x, y) {
+        this.context.moveTo(x, y);
+      };
+      Graphics.prototype.drawPathLineTo = function (x, y) {
+        this.context.lineTo(x, y);
+      };
+    </script>
+    <script type="text/javascript">
+      /*
+       * 캔버스 래퍼
+       */
+      // ##########################################################
+      function Board(board) {
+        this.element = board;
+        this.context = board.getContext("2d");
+        this.width = board.width;
+        this.height = board.height;
+      }
+      // ##########################################################
+      // 캔버스 리셋
+      Board.prototype.reset = function () {
+        this.element.width = this.element.width;
+      };
+      Board.prototype.update = function () {
+        this.width = this.element.width;
+        this.height = this.element.height;
+      };
+      // ##########################################################
+      Board.prototype.show = function () {
+        this.element.hidden = false;
+      };
+      Board.prototype.hide = function () {
+        this.element.hidden = true;
+      };
+    </script>
+    <script type="text/javascript">
+      // ##########################################################
+      // PCM Generator
+      class SinPCMGenerator {
+        constructor(buffer, freq, ampl) {
+          this.dst = buffer;
+          this.freq = freq;
+          this.ampl = ampl;
+          this.gen = 0;
+          this.rad = 0;
+        }
+        generate(length) {
+          length = Math.ceil(44100 * length);
+          if (this.gen >= length) return;
+          const deg360 = Math.PI * 2;
+          const radspd = (deg360 * this.freq) / 44100;
+          while (this.gen < length || this.rad < deg360) {
+            if (this.rad >= deg360) this.rad -= deg360;
+            if (this.dst.length <= this.gen) this.dst.push(0);
+            this.dst[this.gen] += Math.sin(this.rad) * this.ampl;
+            this.rad += radspd;
+            this.gen++;
+          }
+          this.rad += deg360;
+        }
+      }
+      // Square
+      class SquarePCMGenerator {
+        constructor(buffer, freq, ampl) {
+          this.dst = buffer;
+          this.freq = freq;
+          this.ampl = ampl;
+          this.gen = 0;
+          this.rad = 0;
+        }
+        generate(length) {
+          length = Math.ceil(44100 * length);
+          if (this.gen >= length) return;
+          const deg360 = Math.PI * 2;
+          const radspd = (deg360 * this.freq) / 44100;
+          while (this.gen < length || this.rad < deg360) {
+            if (this.rad >= deg360) this.rad -= deg360;
+            if (this.dst.length <= this.gen) this.dst.push(0);
+            this.dst[this.gen] += (this.rad < Math.PI ? 1 : -1) * this.ampl;
+            this.rad += radspd;
+            this.gen++;
+          }
+          this.rad += deg360;
+        }
+      }
+      // Triangle
+      class TrianglePCMGenerator {
+        constructor(buffer, freq, ampl) {
+          this.dst = buffer;
+          this.freq = freq;
+          this.ampl = ampl;
+          this.gen = 0;
+          this.rad = 0;
+        }
+        generate(length) {
+          length = Math.ceil(44100 * length);
+          if (this.gen >= length) return;
+          const deg360 = Math.PI * 2;
+          const radspd = (deg360 * this.freq) / 44100;
+          while (this.gen < length || this.rad < deg360) {
+            if (this.rad >= deg360) this.rad -= deg360;
+            if (this.dst.length <= this.gen) this.dst.push(0);
+            const ratio = this.rad / deg360;
+            const value =
+              ratio < 0.25
+                ? ratio * 4
+                : ratio < 0.75
+                  ? 2 - ratio * 4
+                  : ratio * 4 - 4;
+            this.dst[this.gen] += value * this.ampl;
+            this.rad += radspd;
+            this.gen++;
+          }
+          this.rad += deg360;
+        }
+      }
+      // Saw
+      class SawPCMGenerator {
+        constructor(buffer, freq, ampl) {
+          this.dst = buffer;
+          this.freq = freq;
+          this.ampl = ampl;
+          this.gen = 0;
+          this.rad = 0;
+        }
+        generate(length) {
+          length = Math.ceil(44100 * length);
+          if (this.gen >= length) return;
+          const deg360 = Math.PI * 2;
+          const radspd = (deg360 * this.freq) / 44100;
+          while (this.gen < length || this.rad < deg360) {
+            if (this.rad >= deg360) this.rad -= deg360;
+            if (this.dst.length <= this.gen) this.dst.push(0);
+            const ratio = this.rad / deg360;
+            const value = ratio * 2 - 1;
+            this.dst[this.gen] += value * this.ampl;
+            this.rad += radspd;
+            this.gen++;
+          }
+          this.rad += deg360;
+        }
+      }
+      // Noise
+      class NoiseGenerator {
+        constructor(buffer, ampl) {
+          this.dst = buffer;
+          this.ampl = ampl;
+        }
+        generate(length) {
+          length = Math.ceil(44100 * length);
+          this.gen = 0;
+          while (this.gen < length) {
+            if (this.dst.length <= this.gen) this.dst.push(0);
+            this.dst[this.gen++] += Math.random() * 2 * this.ampl - this.ampl;
+          }
+        }
+      }
+      // FMSynthesisPCMGenerator
+      class FMSynthesisPCMGenerator {
+        constructor(buffer, freq, ampl, op, length) {
+          this.dst = buffer;
+          this.src = new Array(Math.ceil(44100 * length));
+          this.gen = 0;
+          if (op.reset) op.reset();
+          for (let i = 0; i < this.src.length; ++i) {
+            this.src[i] = op.calculate(i / 44100, freq, 0, []) * ampl;
+          }
+        }
+        generate(length) {
+          length = Math.ceil(44100 * length);
+          while (this.gen < length) {
+            if (this.dst.length <= this.gen) this.dst.push(0);
+            this.dst[this.gen] += this.src[this.gen];
+            this.gen++;
+          }
+        }
+      }
+      /*
+       * 오디오 버퍼 래퍼.
+       */
+      // ##########################################################
+      function Sound() {
+        this.buffer = null;
+        this.node = null;
+        this.gainNode = Sound.context.createGain();
+        this.beginTime = 0;
+      }
+      Sound.context = new (AudioContext || webkitAudioContext)();
+      Sound.sampleRate = function () {
+        return Sound.context.sampleRate;
+      };
+      // 음파 PCM 데이터를 만듭니다.
+      // frequency: 주파수(Hz)
+      // duration: 길이(초)
+      // sampleRate: 샘플링 주파수(Hz), 보통 44100
+      // func: 각도, PCM(float)
+      Sound.makeWave = function (frequency, duration, sampleRate, func) {
+        sampleRate = sampleRate || Sound.sampleRate();
+        var pcm = new Array(Math.ceil(sampleRate * duration));
+        var degree = 0;
+        var degreeSpeed = 360.0 / (sampleRate / frequency);
+        for (var t = 0; t < pcm.length; ++t) {
+          pcm[t] = func(degree);
+          degree += degreeSpeed;
+          if (degree >= 360.0) degree -= 360.0;
+        }
+        // 파형을 완료 시킴.
+        while (degree < 360.0) {
+          pcm.push(func(degree));
+          degree += degreeSpeed;
+        }
+        return pcm;
+      };
+      // 사인파 PCM 데이터를 만듭니다.
+      Sound.makeSinWave = function (frequency, amplitude, duration, sampleRate) {
+        return Sound.makeWave(
+          frequency,
+          duration,
+          sampleRate,
+          function (degree) {
+            return Math.sin(d2r(degree)) * amplitude;
+          },
+        );
+      };
+      // 사각파 PCM 데이터를 만듭니다.
+      Sound.makeSquareWave = function (
+        frequency,
+        amplitude,
+        duration,
+        sampleRate,
+      ) {
+        return Sound.makeWave(
+          frequency,
+          duration,
+          sampleRate,
+          function (degree) {
+            if (degree < 180) {
+              return amplitude;
+            } else {
+              return -amplitude;
+            }
+          },
+        );
+      };
+      // 삼각파 PCM 데이터를 만듭니다.
+      Sound.makeTriangleWave = function (
+        frequency,
+        amplitude,
+        duration,
+        sampleRate,
+      ) {
+        return Sound.makeWave(
+          frequency,
+          duration,
+          sampleRate,
+          function (degree) {
+            var deg = degree;
+            if (deg >= 180) deg -= 180;
+            if (deg > 90) deg = 180 - deg;
+            deg = deg / 90.0 * amplitude;
+            if (degree < 180) return deg;
+            else return -deg;
+          },
+        );
+      };
+      // 톱니파 PCM 데이터를 만듭니다.
+      Sound.makeSawWave = function (frequency, amplitude, duration, sampleRate) {
+        return Sound.makeWave(
+          frequency,
+          duration,
+          sampleRate,
+          function (degree) {
+            return ((degree - 180.0) / 180.0 * amplitude);
+          },
+        );
+      };
+      // 다른 오디오 버퍼를 변조하여 PCM 데이터를 만듭니다.
+      Sound.makeWaveFromBuffer = function(otherBuffer, pitchScale, amplitude, duration) {
+        var targetBuffer = otherBuffer.getChannelData(0);
+        const resampleScale = pitchScale = (otherBuffer.sampleRate / Sound.sampleRate());
+        const length = Math.ceil(duration = Sound.sampleRate());
+        var buffer = new Array(length);
+        for (var i = 0; i < length; ++i) {
+          var targetIndex = i * resampleScale;
+          var beginIndex = Math.floor(targetIndex);
+          var beginPcm = targetBuffer[beginIndex % otherBuffer.length];
+          var endPcm = targetBuffer[(beginIndex + 1) % otherBuffer.length];
+          var linearPcm = beginPcm + (endPcm - beginPcm) * (targetIndex - beginIndex);
+          buffer[i] = linearPcm * amplitude;
+        }
+        return buffer;
+      }
+      // ##########################################################
+      // 음계에 해당하는 주파수를 반환합니다.
+      Sound.scaleToFrequency = function(scale, octave) {
+        return (440.0 * Math.pow(2, (scale - 9 + (octave - 4) * 12) / 12.0));
+      }
+      // ##########################################################
+      // PCM 배열로 사운드를 만듭니다.
+      Sound.fromPcm = function(pcmDataArray, sampleRate) {
+        sampleRate = sampleRate || Sound.sampleRate();
+        var snd = new Sound();
+        var channels = 1;
+        snd.buffer = Sound.context.createBuffer(channels, pcmDataArray.length, sampleRate);
+        var channellObj = snd.buffer.getChannelData(0);
+        snd.buffer.length = pcmDataArray.length;
+        for (var i = 0; i< pcmDataArray.length, ++i) {
+          channellObj[i] = pcmDataArray[i];
+        }
+        return snd;
+      }
+      // 사인파를 만듭니다.
+      Sound.fromFrequency = function(frequency, amplitude, duration, sampleRate) {
+        var pcmData = Sound.makeSinWave(frequency, amplitude, duration, sampleRate);
+        return Sound.fromPcm(pcmData, sampleRate);
+      }
+      // 음계에 해당하는 사운드를 만듭니다.
+      Sound.fromScale = function(scale, octave, amplitude, duration, sampleRate) {
+        var frequency = Sound.scaleToFrequency(scale, octave);
+        return Sound.fromFrequency(frequency, amplitude, duration, sampleRate);
+      }
+      // 파일을 비동기로 읽어서 사운드를 만듭니다.
+      // 반환된 사운드의 로딩이 되었는지 여부는 isLoaded 메소드를 호출해서 알 수 있습니다.
+      // file, pitchScale, amplitude, duration
+      Sound.fromFile = function(file, pitchScale, amplitude, duration) {
+        var snd = new Sound();
+        var reader = new FileReader();
+        reader.onload = function() {
+          Sound.context.decodeAudioData(reader.result, function(decoded){
+            var temp = Sound.fromBuffer(decoded, pitchScale, amplitude, duration);
+            snd.buffer = temp.buffer;
+          });
+        };
+        reader.readAsArrayBuffer(file);
+        return snd;
+      }
+      // 다른 오디오 버퍼로부터 사운드를 만듭니다.
+      // otherBuffer, pitchScale, amplitude, duration
+      Sound.fromBuffer = function(otherBuffer, pitchScale, amplitude, duration) {
+        var snd = new Sound();
+        var buffer = Sound.makeWaveFromBuffer(otherBuffer, pitchScale, amplitude, duration);
+        var sndBuffer = Sound.context.createBuffer(1, buffer.length, Sound.sampleRate());
+        var channelObj = sndBuffer.getChannelData(0);
+        sndBuffer.length = buffer.length;
+        for (var i = 0; i < buffer.length; ++i) {
+          channelObj[i] = buffer[i];
+        }
+        return snd;
+      }
+      // ##########################################################
+      Sound.prototype.isLoaded = function() {
+        return this.buffer != null;
+      }
+      Sound.prototype.play = function(loop) {
+        if (this.isLoaded()) {
+          this.node = Sound.context.createBufferSource();
+          this.node.buffer = this.buffer;
+          this.node.loop = loop || false;
+          this.node.connect(this.gainNode);
+          this.gainNode.connect(Sound.context.destination);
+          this.node.start(0);
+          this.beginTime = Sound.context.currentTime;
+        }
+      }
+      Sound.prototype.stop = function() {
+        if (this.node != null) {
+          this.node.stop(0);
+          this.gainNode.disconnect();
+          this.node.disconnect();
+          this.node = null;
+        }
+      }
+      Sound.prototype.sampleRate = function() {
+        if (this.isLoaded()) {
+          return this.buffer.sampleRate;
+        }
+        return 0;
+      }
+      Sound.prototype.duration = function() {
+        if (this.isLoaded()) {
+          return this.buffer.duration;
+        }
+        return 0;
+      }
+      Sound.prototype.currentTime = function() {
+        if (this.node == null) {
+          return 0;
+        }
+        return Math.min(Sound.context.currentTime - this.beginTime, this.duration());
+      }
+      Sound.prototype.getBuffer = function() {
+        if (this.isLoaded()) {
+          return this.buffer.getChannelData(0);
+        }
+        return null;
+      }
+      Sound.prototype.onPlaying = function() {
+        return (this.node != null && (Sound.context.currentTime < this.beginTime + this.duration() || this.node.loop));
+      }
+      Sound.prototype.setVolume = function(volume) {
+        this.gainNode.gain.value = volume;
+      }
+      Sound.prototype.getVolume = function() {
+        return this.gainNode.gain.value;
+      }
+    </script>
+  </head>
+  <body></body>
+</html>
