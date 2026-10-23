@@ -1263,7 +1263,12 @@
         return pcm;
       };
       // 사인파 PCM 데이터를 만듭니다.
-      Sound.makeSinWave = function (frequency, amplitude, duration, sampleRate) {
+      Sound.makeSinWave = function (
+        frequency,
+        amplitude,
+        duration,
+        sampleRate,
+      ) {
         return Sound.makeWave(
           frequency,
           duration,
@@ -1308,101 +1313,152 @@
             var deg = degree;
             if (deg >= 180) deg -= 180;
             if (deg > 90) deg = 180 - deg;
-            deg = deg / 90.0 * amplitude;
+            deg = (deg / 90.0) * amplitude;
             if (degree < 180) return deg;
             else return -deg;
           },
         );
       };
       // 톱니파 PCM 데이터를 만듭니다.
-      Sound.makeSawWave = function (frequency, amplitude, duration, sampleRate) {
+      Sound.makeSawWave = function (
+        frequency,
+        amplitude,
+        duration,
+        sampleRate,
+      ) {
         return Sound.makeWave(
           frequency,
           duration,
           sampleRate,
           function (degree) {
-            return ((degree - 180.0) / 180.0 * amplitude);
+            return ((degree - 180.0) / 180.0) * amplitude;
           },
         );
       };
       // 다른 오디오 버퍼를 변조하여 PCM 데이터를 만듭니다.
-      Sound.makeWaveFromBuffer = function(otherBuffer, pitchScale, amplitude, duration) {
+      Sound.makeWaveFromBuffer = function (
+        otherBuffer,
+        pitchScale,
+        amplitude,
+        duration,
+      ) {
         var targetBuffer = otherBuffer.getChannelData(0);
-        const resampleScale = pitchScale = (otherBuffer.sampleRate / Sound.sampleRate());
-        const length = Math.ceil(duration = Sound.sampleRate());
+        const resampleScale = (pitchScale =
+          otherBuffer.sampleRate / Sound.sampleRate());
+        const length = Math.ceil((duration = Sound.sampleRate()));
         var buffer = new Array(length);
         for (var i = 0; i < length; ++i) {
           var targetIndex = i * resampleScale;
           var beginIndex = Math.floor(targetIndex);
           var beginPcm = targetBuffer[beginIndex % otherBuffer.length];
           var endPcm = targetBuffer[(beginIndex + 1) % otherBuffer.length];
-          var linearPcm = beginPcm + (endPcm - beginPcm) * (targetIndex - beginIndex);
+          var linearPcm =
+            beginPcm + (endPcm - beginPcm) * (targetIndex - beginIndex);
           buffer[i] = linearPcm * amplitude;
         }
         return buffer;
-      }
+      };
       // ##########################################################
       // 음계에 해당하는 주파수를 반환합니다.
-      Sound.scaleToFrequency = function(scale, octave) {
-        return (440.0 * Math.pow(2, (scale - 9 + (octave - 4) * 12) / 12.0));
-      }
+      Sound.scaleToFrequency = function (scale, octave) {
+        return 440.0 * Math.pow(2, (scale - 9 + (octave - 4) * 12) / 12.0);
+      };
       // ##########################################################
       // PCM 배열로 사운드를 만듭니다.
-      Sound.fromPcm = function(pcmDataArray, sampleRate) {
+      Sound.fromPcm = function (pcmDataArray, sampleRate) {
         sampleRate = sampleRate || Sound.sampleRate();
         var snd = new Sound();
         var channels = 1;
-        snd.buffer = Sound.context.createBuffer(channels, pcmDataArray.length, sampleRate);
+        snd.buffer = Sound.context.createBuffer(
+          channels,
+          pcmDataArray.length,
+          sampleRate,
+        );
         var channellObj = snd.buffer.getChannelData(0);
         snd.buffer.length = pcmDataArray.length;
-        for (var i = 0; i< pcmDataArray.length, ++i) {
+        for (var i = 0; i < pcmDataArray.length; ++i) {
           channellObj[i] = pcmDataArray[i];
         }
         return snd;
-      }
+      };
       // 사인파를 만듭니다.
-      Sound.fromFrequency = function(frequency, amplitude, duration, sampleRate) {
-        var pcmData = Sound.makeSinWave(frequency, amplitude, duration, sampleRate);
+      Sound.fromFrequency = function (
+        frequency,
+        amplitude,
+        duration,
+        sampleRate,
+      ) {
+        var pcmData = Sound.makeSinWave(
+          frequency,
+          amplitude,
+          duration,
+          sampleRate,
+        );
         return Sound.fromPcm(pcmData, sampleRate);
-      }
+      };
       // 음계에 해당하는 사운드를 만듭니다.
-      Sound.fromScale = function(scale, octave, amplitude, duration, sampleRate) {
+      Sound.fromScale = function (
+        scale,
+        octave,
+        amplitude,
+        duration,
+        sampleRate,
+      ) {
         var frequency = Sound.scaleToFrequency(scale, octave);
         return Sound.fromFrequency(frequency, amplitude, duration, sampleRate);
-      }
+      };
       // 파일을 비동기로 읽어서 사운드를 만듭니다.
       // 반환된 사운드의 로딩이 되었는지 여부는 isLoaded 메소드를 호출해서 알 수 있습니다.
       // file, pitchScale, amplitude, duration
-      Sound.fromFile = function(file, pitchScale, amplitude, duration) {
+      Sound.fromFile = function (file, pitchScale, amplitude, duration) {
         var snd = new Sound();
         var reader = new FileReader();
-        reader.onload = function() {
-          Sound.context.decodeAudioData(reader.result, function(decoded){
-            var temp = Sound.fromBuffer(decoded, pitchScale, amplitude, duration);
+        reader.onload = function () {
+          Sound.context.decodeAudioData(reader.result, function (decoded) {
+            var temp = Sound.fromBuffer(
+              decoded,
+              pitchScale,
+              amplitude,
+              duration,
+            );
             snd.buffer = temp.buffer;
           });
         };
         reader.readAsArrayBuffer(file);
         return snd;
-      }
+      };
       // 다른 오디오 버퍼로부터 사운드를 만듭니다.
       // otherBuffer, pitchScale, amplitude, duration
-      Sound.fromBuffer = function(otherBuffer, pitchScale, amplitude, duration) {
+      Sound.fromBuffer = function (
+        otherBuffer,
+        pitchScale,
+        amplitude,
+        duration,
+      ) {
         var snd = new Sound();
-        var buffer = Sound.makeWaveFromBuffer(otherBuffer, pitchScale, amplitude, duration);
-        var sndBuffer = Sound.context.createBuffer(1, buffer.length, Sound.sampleRate());
+        var buffer = Sound.makeWaveFromBuffer(
+          otherBuffer,
+          pitchScale,
+          amplitude,
+          duration,
+        );
+        var sndBuffer = Sound.context.createBuffer(
+          1,
+          buffer.length,
+          Sound.sampleRate(),
+        );
         var channelObj = sndBuffer.getChannelData(0);
         sndBuffer.length = buffer.length;
         for (var i = 0; i < buffer.length; ++i) {
           channelObj[i] = buffer[i];
         }
         return snd;
-      }
+      };
       // ##########################################################
-      Sound.prototype.isLoaded = function() {
+      Sound.prototype.isLoaded = function () {
         return this.buffer != null;
-      }
-      Sound.prototype.play = function(loop) {
+      };
+      Sound.prototype.play = function (loop) {
         if (this.isLoaded()) {
           this.node = Sound.context.createBufferSource();
           this.node.buffer = this.buffer;
@@ -1412,48 +1468,1527 @@
           this.node.start(0);
           this.beginTime = Sound.context.currentTime;
         }
-      }
-      Sound.prototype.stop = function() {
+      };
+      Sound.prototype.stop = function () {
         if (this.node != null) {
           this.node.stop(0);
           this.gainNode.disconnect();
           this.node.disconnect();
           this.node = null;
         }
-      }
-      Sound.prototype.sampleRate = function() {
+      };
+      Sound.prototype.sampleRate = function () {
         if (this.isLoaded()) {
           return this.buffer.sampleRate;
         }
         return 0;
-      }
-      Sound.prototype.duration = function() {
+      };
+      Sound.prototype.duration = function () {
         if (this.isLoaded()) {
           return this.buffer.duration;
         }
         return 0;
-      }
-      Sound.prototype.currentTime = function() {
+      };
+      Sound.prototype.currentTime = function () {
         if (this.node == null) {
           return 0;
         }
-        return Math.min(Sound.context.currentTime - this.beginTime, this.duration());
-      }
-      Sound.prototype.getBuffer = function() {
+        return Math.min(
+          Sound.context.currentTime - this.beginTime,
+          this.duration(),
+        );
+      };
+      Sound.prototype.getBuffer = function () {
         if (this.isLoaded()) {
           return this.buffer.getChannelData(0);
         }
         return null;
-      }
-      Sound.prototype.onPlaying = function() {
-        return (this.node != null && (Sound.context.currentTime < this.beginTime + this.duration() || this.node.loop));
-      }
-      Sound.prototype.setVolume = function(volume) {
+      };
+      Sound.prototype.onPlaying = function () {
+        return (
+          this.node != null &&
+          (Sound.context.currentTime < this.beginTime + this.duration() ||
+            this.node.loop)
+        );
+      };
+      Sound.prototype.setVolume = function (volume) {
         this.gainNode.gain.value = volume;
-      }
-      Sound.prototype.getVolume = function() {
+      };
+      Sound.prototype.getVolume = function () {
         return this.gainNode.gain.value;
+      };
+    </script>
+    <script type="text/javascript">
+      function MusicList() {}
+      MusicList.Keys = {
+        Count: "music_count",
+        Sheet: "music_sheet",
+      };
+      MusicList.getCount = function () {
+        if (g_db.contains(MusicList.Keys.Count)) {
+          return g_db.getInt(MusicList.Keys.Count);
+        }
+        return 0;
+      };
+      MusicList.getTitleFromSheet = function (sheet) {
+        var title = "";
+        var doAppend = false;
+        for (var i = 0; i < sheet.length; ++i) {
+          if (doAppent) {
+            if (sheet[i] == "\n") break;
+            title += sheet[i];
+          } else if (sheet[i] == "$") {
+            doAppend = true;
+          } else if (sheet[i] != " " && sheet[i] != "\n") {
+            break;
+          }
+        }
+        title = title.trim();
+        return title;
+      };
+      MusicList.getSheet = function (index) {
+        var key = MusicList.Keys.Sheet + index;
+        if (g_db.contains(key)) {
+          return g_db.get(key);
+        }
+        return "";
+      };
+      MusicList.saveSheet = function (index, sheet) {
+        var key = MusicList.Keys.Sheet + index;
+        if (g_db.contains(key)) {
+          g_db.set(MusicList.Keys.Count, MusicList.getCount() + 1);
+        }
+        g_db.set(key, sheet);
+      };
+    </script>
+    <script type="text/javascript">
+      function OpNodeConv() {
+        this.parents = [];
+        this.scales = [];
       }
+      OpNodeConv.prototype.calculate = function (
+        time,
+        baseFreq,
+        offset,
+        loopCheck,
+      ) {
+        if (this.parents.length <= 0) {
+          return 0;
+        }
+        var sum = 0;
+        for (var i = 0; i < this.parents.length; ++i) {
+          sum +=
+            this.parents[i].calculate(time, baseFreq, offset, loopCheck) *
+            this.scales[i];
+        }
+        return sum / this.parents.length;
+      };
+      OpNodeConv.prototype.getFrequency = function (baseFreq) {
+        if (this.parents.length <= 0) {
+          return 0;
+        }
+        return this.parents[0].getFrequency(baseFreq);
+      };
+      // ##########################################################
+      function OpNodeMod() {
+        this.parents = [];
+        this.indices = [];
+        this.modulator = null;
+        this.prevOutput = 0;
+      }
+      OpNodeMod.prototype.calculate = function (
+        time,
+        baseFreq,
+        offset,
+        loopCheck,
+      ) {
+        loopCheck = loopCheck || [];
+        if (this.modulator === null) {
+          return 0;
+        }
+        if (loopCheck.indexOf(this) >= 0) {
+          return this.prevOutput;
+        }
+        loopCheck.push(this);
+        var modTime = 0;
+        for (var i = 0; i < this.parents.length; ++i) {
+          var w = this.parents[i].getFrequency(baseFreq) * 2 * Math.PI;
+          modTime +=
+            (this.indices[i] / w) *
+            (this.parents[i].calculate(
+              time,
+              baseFreq,
+              -Math.PI / 2,
+              loopCheck,
+            ) +
+              1);
+        }
+        this.prevOutput = this.modulator.calculate(
+          time,
+          baseFreq,
+          modTime + offset,
+        );
+        return this.prevOutput;
+      };
+      OpNodeMod.prototype.getFrequency = function (baseFreq) {
+        if (this.modulator === null) {
+          return 0;
+        }
+        return this.modulator.getFrequency(baseFreq);
+      };
+      OpNodeMod.reset = function (loopCheck) {
+        loopCheck = loopCheck || [];
+        if (loopCheck.indexOf(this) < 0) {
+          loopCheck.push(this);
+          this.prevOutput = 0;
+          if (this.modulator !== null && this.modulator.resset) {
+            this.modulator.reset();
+          }
+          for (var i = 0; i < this.parents.length; ++i) {
+            if (this.parents[i].reset) {
+              this.parents[i].reset(loopCheck);
+            }
+          }
+        }
+      };
+      // ##########################################################
+      OpNodeWrapper.prototype.calculate = function (
+        time,
+        baseFreq,
+        offset,
+        loopCheck,
+      ) {
+        loopCheck = loopCheck || [];
+        if (this.node === null) {
+          return 0;
+        }
+        if (loopCheck.indexOf(this) >= 0) {
+          return this.prevOutput;
+        }
+        loopCheck.push(this);
+        var sum = 0;
+        for (var i = 0; i < this.parents.length; ++i) {
+          sum +=
+            this.parents[i].calculate(time, baseFreq, 0, loopCheck) *
+            this.indices[i];
+        }
+        this.prevOutput = this.node.calculate(time, baseFreq, sum);
+        return this.prevOutput;
+      };
+      OpNodeWrapper.prototype.getFrequency = function (baseFreq) {
+        if (this.node === null) {
+          return 0;
+        }
+        return this.node.getFrequency(baseFreq);
+      };
+      OpNodeWrapper.prototype.reset = function (loopCheck) {
+        loopCheck = loopCheck || [];
+        if (loopCheck.indexOf(this) < 0) {
+          loopCheck.push(this);
+          this.prevOutput = 0;
+          if (this.node !== null && this.node.reset) {
+            this.node.reset();
+          }
+          for (var i = 0; i < this.parents.length; ++i) {
+            if (this.parents[i].reset) {
+              this.parents[i].reset(loopCheck);
+            }
+          }
+        }
+      };
+      // ##########################################################
+      function OpNodeLowPass(cutFrequency) {
+        this.cutFrequency = cutFrequency;
+        this.alpha =
+          1.0 / 44100 / (1.0 / (2 * Math.PI * cutFrequency) + 1.0 / 44100);
+        this.prevOutput = OpNodeLowPass.FIRST_OUTPUT;
+      }
+      OpNodeLowPass.FIRST_OUTPUT = -1234567;
+      OpNodeLowPass.prototype.calculate = function (time, baseFreq, offset) {
+        if (this.prevOutput == OpNodeLowPass.FIRST_OUTPUT) {
+          this.prevOutput = this.alpha * offset;
+        } else {
+          this.prevOutput =
+            this.prevOutput + this.alpha * (offset - this.prevOutput);
+        }
+
+        return this.prevOutput;
+      };
+      OpNodeLowPass.prototype.getFrequency = function (baseFreq) {
+        return this.cutFrequency;
+      };
+      OpNodeLowPass.prototype.reset = function () {
+        this.prevOutput = OpNodeLowPass.FIRST_OUTPUT;
+      };
+      function OpNodeLowPass(cutFrequency) {
+        this.cutFrequency = cutFrequency;
+        this.alpha =
+          1.0 / 44100 / (1.0 / (2 * Math.PI * cutFrequency) + 1.0 / 44100);
+        this.prevOutput = OpNodeLowPass.FIRST_OUTPUT;
+      }
+      OpNodeLowPass.FIRST_OUTPUT = -1234567;
+      OpNodeLowPass.prototype.calculate = function (time, baseFreq, offset) {
+        if (this.prevOutput == OpNodeLowPass.FIRST_OUTPUT) {
+          this.prevOutput = this.alpha * offset;
+        } else {
+          this.prevOutput =
+            this.prevOutput + this.alpha * (offset - this.prevOutput);
+        }
+
+        return this.prevOutput;
+      };
+      OpNodeLowPass.prototype.getFrequency = function (baseFreq) {
+        return this.cutFrequency;
+      };
+      OpNodeLowPass.prototype.reset = function () {
+        this.prevOutput = OpNodeLowPass.FIRST_OUTPUT;
+      };
+      // ##########################################################
+      function OpNodeHighPass(cutFrequency) {
+        this.cutFrequency = cutFrequency;
+        this.alpha =
+          1.0 /
+          (2 * Math.PI * cutFrequency) /
+          (1.0 / (2 * Math.PI * cutFrequency) + 1.0 / 44100);
+        this.prevOutput = OpNodeHighPass.FIRST_OUTPUT;
+        this.prevInput = OpNodeHighPass.FIRST_OUTPUT;
+      }
+      OpNodeHighPass.FIRST_OUTPUT = -1234567;
+      OpNodeHighPass.prototype.calculate = function (time, baseFreq, offset) {
+        if (this.prevOutput == OpNodeHighPass.FIRST_OUTPUT) {
+          this.prevInput = offset;
+          this.prevOutput = offset;
+        } else {
+          this.prevOutput =
+            this.alpha * (this.prevOutput + offset - this.prevInput);
+          this.prevInput = offset;
+        }
+        return this.prevOutput;
+      };
+      OpNodeHighPass.prototype.getFrequency = function (baseFreq) {
+        return this.cutFrequency;
+      };
+      OpNodeHighPass.prototype.reset = function () {
+        this.prevOutput = OpNodeHighPass.FIRST_OUTPUT;
+        this.prevInput = OpNodeHighPass.FIRST_OUTPUT;
+      };
+      // ##########################################################
+      function OpNodeNoise(frequency) {
+        this.frequency = frequency || 0;
+      }
+      OpNodeNoise.prototype.calculate = function (time, base, Freq, offset) {
+        return Math.random() * 2.0 - 1.0;
+      };
+      OpNodeNoise.prototype.getFrequency = function (baseFreq) {
+        return this.frequency;
+      };
+      // ##########################################################
+      function OpNodeFeedback(alpha) {
+        this.alpha = limitNumber(alpha, 0, 1);
+        this.prevOutput = 0;
+      }
+      OpNodeFeedback.prototype.calculate = function (time, baseFreq, offset) {
+        this.prevOutput = this.prevOutput * this.alpha + offset;
+        return this.prevOutput;
+      };
+      OpNodeFeedback.prototype.getFrequency = function (baseFreq) {
+        return baseFreq;
+      };
+      // ##########################################################
+      OpNodeFeedback.prototype.reset = function () {
+        this.prevOutput = 0;
+      };
+      function OpNodeSin(frequency) {
+        this.frequency = frequency || 0;
+      }
+      OpNodeSin.prototype.calculate = function (time, baseFreq, offset) {
+        return Math.sin(this.frequency * Math.PI * 2 * time + offset);
+      };
+      OpNodeSin.prototype.getFrequency = function (baseFreq) {
+        return this.frequency;
+      };
+      // ##########################################################
+      function OpNodeSqr(frequency) {
+        this.frequency = frequency || 0;
+      }
+      OpNodeSqr.prototype.calculate = function (time, baseFreq, offset) {
+        var ft = this.frequency * time;
+        return (
+          (2 * Math.floor(ft + offset) - Math.floor(2 * (ft + offset)) + 1) *
+            2 -
+          1
+        );
+      };
+      OpNodeSqr.prototype.getFrequency = function (baseFreq) {
+        return this.frequency;
+      };
+      // ##########################################################
+      function OpNodeTri(frequency) {
+        this.frequency = frequency || 0;
+      }
+      OpNodeTri.prototype.calculate = function (time, baseFreq, offset) {
+        var ft = this.frequency * time;
+        return (
+          2 * Math.abs(2 * (ft + offset - Math.floor(ft + offset)) - 1) - 1
+        );
+      };
+      OpNodeTri.prototype.getFrequency = function (baseFreq) {
+        return this.frequency;
+      };
+      // ##########################################################
+      function OpNodeSaw(frequency) {
+        this.frequency = frequency || 0;
+      }
+      OpNodeSaw.prototype.calculate = function (time, baseFreq, offset) {
+        var ft = this.frequency * time;
+        return 2 * (ft + offset - Math.floor(0.5 + ft + offset));
+      };
+      OpNodeSaw.prototype.getFrequency = function (baseFreq) {
+        return this.frequency;
+      };
+      // ##########################################################
+      function OpNodeNoiseNote(scale) {
+        this.scale = scale || 1;
+      }
+      OpNodeNoiseNote.prototype.calculate = function (time, baseFreq, offset) {
+        return Math.random() * 2.0 - 1.0;
+      };
+      OpNodeNoiseNote.prototype.getFrequency = function (baseFreq) {
+        return baseFreq * this.scale;
+      };
+      // ##########################################################
+      function OpNodeSinNote(scale) {
+        this.scale = scale || 1;
+      }
+      OpNodeSinNote.prototype.calculate = function (time, baseFreq, offset) {
+        return Math.sin(baseFreq * this.scale * Math.PI * 2 * time + offset);
+      };
+      OpNodeSinNote.prototype.getFrequency = function (baseFreq) {
+        return baseFreq * this.scale;
+      };
+      // ##########################################################
+      function OpNodeSqrNote(scale) {
+        this.scale = scale || 1;
+      }
+      OpNodeSqrNote.prototype.calculate = function (time, baseFreq, offset) {
+        var ft = baseFreq * this.scale * time;
+        return (
+          (2 * Math.floor(ft + offset) - Math.floor(2 * (ft + offset)) + 1) *
+            2 -
+          1
+        );
+      };
+      OpNodeSqrNote.prototype.getFrequency = function (baseFreq) {
+        return baseFreq * this.scale;
+      };
+      // ##########################################################
+      function OpNodeTriNote(scale) {
+        this.scale = scale || 1;
+      }
+      OpNodeTriNote.prototype.calculate = function (time, baseFreq, offset) {
+        var ft = baseFreq * this.scale * time;
+        return (
+          2 * Math.abs(2 * (ft + offset - Math.floor(ft + offset)) - 1) - 1
+        );
+      };
+      OpNodeTriNote.prototype.getFrequency = function (baseFreq) {
+        return baseFreq * this.scale;
+      };
+      // ##########################################################
+      function OpNodeSawNote(scale) {
+        this.scale = scale || 1;
+      }
+      OpNodeSawNote.prototype.calculate = function (time, baseFreq, offset) {
+        var ft = baseFreq * this.scale * time;
+        return 2 * (ft + offset - Math.floor(0.5 + ft + offset));
+      };
+      OpNodeSawNote.prototype.getFrequency = function (baseFreq) {
+        return baseFreq * this.scale;
+      };
+      // ##########################################################
+      function OpNodeParser() {
+        this.token = "";
+        this.parents = [];
+        this.node = null;
+      }
+      OpNodeParser.prototype.build = function (opMap, substitute) {
+        if (this.node !== null) {
+          return this.node;
+        }
+        var opType = this.token.indexOf(">") >= 0 ? ">" : "+";
+        var terms = this.token.split(opType);
+        if (opType == "+") {
+          this.node = new OpNodeConv();
+        }
+        var prevData = terms[0].split(":");
+        var prevName = prevData[0].trim();
+        var prevValue =
+          prevData.length >= 2 ? parseFloat(prevData[1].trim()) : 1;
+        var prevOp = null;
+        if (prevName[0] == "{") {
+          var parentIndex = parseInt(
+            prevName.substring(1, prevName.indexOf("}")).trim(),
+          );
+          prevOp = this.parents[parentIndex].build(opMap, substitute);
+        } else if (
+          substitute.has(prevName) &&
+          opMap.has(substitute.get(prevName))
+        ) {
+          prevOp = opMap.get(substitute.get(prevName));
+        }
+        if (this.node !== null && prevOp !== null) {
+          this.node.parents.push(prevOp);
+          this.node.scales.push(prevValue);
+        }
+        for (var t = 1; t < terms.length; t++) {
+          var dataTarget = terms[t].split(":");
+          var nameTarget = dataTarget[0].trim();
+          var valueNext =
+            dataTarget.length >= 2 ? parseFloat(dataTarget[1].trim()) : 1;
+          var opTarget = null;
+          if (nameTarget[0] == "{") {
+            var parentIndex = parseInt(
+              nameTarget.substring(1, nameTarget.indexOf("}")).trim(),
+            );
+            opTarget = this.parents[parentIndex].build(opMap, substitute);
+          } else if (
+            substitute.has(nameTarget) &&
+            opMap.has(substitute.get(nameTarget))
+          ) {
+            opTarget = opMap.get(substitute.get(nameTarget));
+          }
+          if (opType == ">") {
+            if (prevOp !== null && opTarget !== null) {
+              opTarget.parents.push(prevOp);
+              opTarget.indices.push(prevValue);
+            }
+          } else {
+            if (opTarget !== null) {
+              this.node.parents.push(opTarget);
+              this.node.scales.push(valueNext);
+            }
+          }
+          prevData = dataTarget;
+          prevName = nameTarget;
+          prevValue = valueNext;
+          prevOp = opTarget;
+        }
+        if (opType == ">") {
+          this.node = prevOp;
+        } else {
+          var modNode = new OpNodeMod();
+          modNode.modulator = this.node;
+          this.node = modNode;
+        }
+        return this.node;
+      };
+      OpNodeParser.prototype.buildCode = function () {
+        var code = "[";
+        for (var i = 0; i < this.token.length; ++i) {
+          if (this.token[i] == "{") {
+            var endIdx = this.token.indexOf("}", i + 1);
+            var index = parseInt(this.token.substring(i + 1, endIdx).trim());
+            code += this.parents[index].buildCode();
+            i = endIdx;
+          } else {
+            code += this.token[i];
+          }
+        }
+        code += "]";
+        return code;
+      };
+    </script>
+    <script type="text/javascript">
+      function MusicResult(sound, startTime, speed) {
+        this.sound = sound;
+        this.startTime = startTime;
+        this.speed = speed;
+      }
+      function MusicMaker() {}
+      MusicMaker.noteNameIndex = {
+        C: 0,
+        d: 2,
+        e: 4,
+        f: 5,
+        g: 7,
+        a: 9,
+        b: 11,
+      };
+      MusicMaker.TOKEN_START_TIME = "@";
+      MusicMaker.waveCache = new Map();
+      MusicMaker.MAX_CACHE_SIZE = 100;
+      MusicMaker.MAX_SUBCACHE_SIZE = 500;
+      MusicMaker.clearCache = function () {
+        MusicMaker.waveCache.clear();
+      };
+      MusicMaker.applyAdsrAndConvBuffer = function (
+        destBuffer,
+        destBegin,
+        srcBuffer,
+        volume,
+        adsr,
+        releaseIndex,
+      ) {
+        // 버퍼 크기 늘리기
+        var endIndex = destBegin + srcBuffer.length;
+        while (endIndex > destBuffer.length) {
+          destBuffer.push(0);
+        }
+        var releaseScale = adsr[2] / 100;
+        var attackSpeed = 0;
+        var decaySpeed = 0;
+        var releaseSpeed = 0;
+        var adsrMode = 0;
+        var adsrScale = 0;
+        if (adsr[0] <= 0) {
+          adsrMode = 1;
+          adsrScale = 1;
+        } else {
+          attackSpeed = 1.0 / ((adsr[0] / 1000.0) * 44100);
+        }
+        if (adsr[1] <= 0) {
+          decaySpeed = 1.0 - releaseScale;
+        } else {
+          decaySpeed = (1.0 - releaseScale) / ((adsr[1] / 1000.0) * 44100);
+        }
+        for (var j = destBegin; j < endIndex; ++j) {
+          // 데시벨을 진폭으로 변환
+          var adsrAmp = (Math.pow(10, adsrScale) - 1) / 9.0;
+          destBuffer[j] += srcBuffer[j - destBegin] * adsrAmp * volume;
+          // 노트 연주가 끝난 시간이면 Release 모드로 진입.
+          if (adsrMode != 3 && j - destBegin >= releaseIndex) {
+            adsrMode = 3;
+            if (adsr[3] > 0) {
+              releaseSpeed = adsrScale / ((adsr[3] / 1000.0) * 44100);
+            } else {
+              releaseSpeed = adsrScale;
+            }
+          }
+          // ADSR에 따른 볼륨 계산
+          if (adsrMode == 0) {
+            adsrScale += attackSpeed;
+            if (adsrScale >= 1.0) {
+              adsrScale = 1;
+              adsrMode = 1;
+            }
+          } else if (adsrMode == 1) {
+            adsrScale -= decaySpeed;
+            if (adsrScale <= releaseScale) {
+              adsrScale = releaseScale;
+              adsrMode = -1;
+            }
+          } else if (adsrMode == 3) {
+            if (adsr[3] < 0.000001) {
+              adsrScale = 0;
+            } else {
+              adsrScale -= releaseSpeed;
+              if (adsrScale < 0) {
+                adsrScale = 0;
+              }
+            }
+          }
+        }
+      };
+      MusicMaker.createOp = function (items) {
+        var name = items[0];
+        var op = null;
+        var wrapper = null;
+        if (items.length == 2) {
+          var type = items[1];
+          var nameEndIndex = -1;
+          for (var i = 0; i < type.length; ++i) {
+            if (isNum(type[i]) || type[i] == ".") {
+              nameEndIndex = i;
+              break;
+            }
+          }
+          if (nameEndIndex < 0) {
+            nameEndIndex = type.length;
+          }
+          var mul =
+            nameEndIndex < type.length
+              ? parseFloat(type.substring(nameEndIndex, type.length))
+              : 1;
+          type = type.substr(0, nameEndIndex);
+          if (type == "sin") {
+            op = new OpNodeSinNote(mul);
+          } else if (type == "sqr") {
+            op = new OpNodeSqrNote(mul);
+          } else if (type == "tri") {
+            op = new OpNodeTriNote(mul);
+          } else if (type == "saw") {
+            op = new OpNodeSawNote(mul);
+          } else if (type == "noise") {
+            op = new OpNodeNoiseNote(mul);
+          }
+        } else if (items.length >= 3) {
+          var type = items[1];
+          var freq = parseFloat(items[2]);
+          if (type == "sin") {
+            op = new OpNodeSin(freq);
+          } else if (type == "sqr") {
+            op = new OpNodeSqr(freq);
+          } else if (type == "tri") {
+            op = new OpNodeTri(freq);
+          } else if (type == "saw") {
+            op = new OpNodeSaw(freq);
+          } else if (type == "noise") {
+            op = new OpNodeNoise(freq);
+          } else if (type == "low") {
+            op = new OpNodeLowPass(freq);
+            wrapper = new OpNodeWrapper(op);
+          } else if (type == "high") {
+            op = new OpNodeHighPass(freq);
+            wrapper = new OpNodeWrapper(op);
+          } else if (type == "feedback") {
+            op = new OpNodeFeedback(freq);
+            wrapper = new OpNodeWrapper(op);
+          }
+        }
+        if (op !== null) {
+          if (wrapper === null) {
+            wrapper = new OpNodeMod();
+            wrapper.modulator = op;
+          }
+          return wrapper;
+        }
+        return null;
+      };
+      MusicMaker.createMusic = function (sheetText, opCallBack, callBack) {
+        var buffer = [0];
+        var opList = [];
+        var opStack = [];
+        var token = "";
+        var paragraph = [];
+        var sheetList = [];
+        var appendToken = function (arr, tok) {
+          tok = tok.trim();
+          if (tok.length > 0) {
+            arr.push(tok);
+          }
+        };
+        // 토큰화
+        for (var i = 0; i < sheetText.length; ++i) {
+          var doSkipSpace = false;
+          var doSkip = false;
+          var endChar = "\n";
+          if (opStack.length > 0) {
+            // 현재 노드 모드
+            var topNode = opStack[opStack.length - 1];
+            if (sheetText[i] == "[") {
+              var newNode = new OpNodeParser();
+              topNode.token += "{" + topNode.parents.length + "}";
+              topNode.parents.push(newNode);
+              opStack.push(newNode);
+            } else if (sheetText[i] == "]") {
+              if (opStack.length <= 1) {
+                paragraph.push("{" + opList.length + "}");
+                opList.push(topNode);
+                opStack.pop();
+              }
+            } else {
+              topNode.token += sheetText[i];
+            }
+          } else if (sheetText[i] == "[") {
+            // 새 노드 문법 진입
+            appendToken(paragraph, token);
+            token = "";
+            opStack.push(new OpNodeParser());
+          } else if (sheetText[i] == "~") {
+            // 문단(채널) 구분
+            appendToken(paragraph, token);
+            token = "";
+            if (paragraph.length > 0) {
+              sheetList.push(paragraph);
+              paragraph = [];
+            }
+            doSkip = true;
+          } else if (sheetText[i] == "$") {
+            // 한줄 주석
+            doSkip = true;
+          } else if (sheetText[i] == "<") {
+            // 여러줄 주석
+            doSkip = true;
+            endChar = ">";
+          } else if (",\r\n\t".indexOf(sheetText[i]) >= 0) {
+            // 토큰 분리
+            appendToken(paragraph, token);
+            token = "";
+          } else if ("(*|~+%&".indexOf(sheetText[i]) >= 0) {
+            // 토큰 분리 및 후행 공백 무시
+            appendToken(paragraph, token);
+            token = sheetText[i];
+            doSkipSpace = true;
+          } else if (sheetText[i] == MusicMaker.TOKEN_START_TIME) {
+            // 시작 위치
+            appendToken(paragraph, token);
+            token = "";
+            paragraph.push(MusicMaker.TOKEN_START_TIME);
+          } else {
+            token += sheetText[i];
+          }
+          if (doSkipSpace) {
+            // 뒤에 공백이 있다면 무시.
+            for (var j = i + 1; j < sheetText.length; ++j) {
+              if (sheetText[j] == " " || sheetText[j] == "\t") {
+                i = j;
+              } else {
+                break;
+              }
+            }
+          }
+          if (doSkip) {
+            // endChar까지 스킵.
+            for (; i < sheetText.length; ++i) {
+              if (sheetText[i] == endChar) {
+                break;
+              }
+            }
+          }
+        }
+        appendToken(paragraph, token);
+        if (paragraph.length > 0) {
+          sheetList.push(paragraph);
+        }
+        var startTime = 0;
+        var speed = 100;
+        var opMap = new Map();
+        let notes = {};
+        let substitute = new Map();
+        // 인터프리터
+        for (var s = 0; s < sheetList.length; ++s) {
+          var sheet = sheetList[s];
+          speed = 100;
+          var bpm = (60 * 1000) / 4 / speed;
+          var isBpm = false;
+          var time = 0;
+          var convWaves = [
+            ["sin1", 1],
+            ["sin2", 0.5],
+            ["sin3", 0.25],
+            ["sin4", 0.125],
+          ];
+          var waveKey = "+sin1:1+sin2:0.5+sin3:0.25+sin4:0.125";
+          var rawWaveKey = "+sin1:1+sin2:0.5+sin3:0.25+sin4:0.125";
+          var prevDelay = 0;
+          var currentScales = [];
+          var volume = 1.0;
+          var channelVolume = 1.0;
+          var loopStack = [];
+          var octaveOffset = 0;
+          var adsr = [0, 6000, 0, 0];
+          for (var t = 0; t < sheet.length; ++t) {
+            token = sheet[t];
+            var cmd = token[0];
+            if (cmd == "*") {
+              // 속도
+              if (token.length >= 4 && token.indexOf("bpm") == 1) {
+                // beats/minute
+                isBpm = true;
+                bpm = parseFloat(token.substr(4, token.length - 4));
+                speed = (60 * 1000) / 4 / bpm;
+              } else {
+                // ms/beat
+                isBpm = false;
+                speed = parseFloat(token.substr(1, token.length - 1));
+                bpm = (60 * 1000) / 4 / speed;
+              }
+            } else if (cmd == "&") {
+              // 파형 선언
+              var items = token.substr(1, token.length - 1).split(":");
+              var op = MusicMaker.createOp(items, opMap);
+              if (op !== null) {
+                let key = items[0];
+                while (substitute.has(key)) key = items[0] + makeName();
+                substitute.set(items[0], key);
+                opMap.set(key, op);
+              }
+              if (opCallBack) {
+                opCallBack(s, token);
+              }
+            } else if (cmd == "m") {
+              // 합성 그래프 생성
+              var opIndex = parseInt(token.substr(1, token.length - 1));
+              var opNode = opList[opIndex];
+              opNode.build(opMap, substitute);
+              if (opCallBack) {
+                opCallBack(s, opNode.buildCode());
+              }
+            } else if (cmd == "~" || cmd == "+") {
+              // 파형
+              if (cmd == "~") {
+                convWaves = [];
+                waveKey = "";
+                rawWaveKey = "";
+              }
+              var info = token.split(":");
+              var waveName = info[0].substring(1, info[0].length).trim();
+              var waveVolume = info.length >= 2 ? parseFloat(info[1]) : 1;
+              rawWaveKey += "+" + waveName + ":" + waveVolume;
+              if (substitute.has(waveName)) waveName = substitute.get(waveName);
+              else {
+                var nameEndIndex = -1;
+                for (var i = 0; i < waveName.length; ++i) {
+                  if (isNum(waveName[i]) || waveName[i] == ".") {
+                    nameEndIndex = i;
+                    break;
+                  }
+                }
+                if (
+                  nameEndIndex >= 0 &&
+                  substitute.has(waveName.substr(0, nameEndIndex))
+                )
+                  waveName =
+                    substitute.get(waveName.substr(0, nameEndIndex)) +
+                    waveName.substr(nameEndIndex);
+              }
+              convWaves.push([waveName, waveVolume]);
+              waveKey += "+" + waveName + ":" + waveVolume;
+            } else if (cmd == "!") {
+              // 볼륨 or ADSR
+              if (token.length >= 2) {
+                if (token[1] == "^") {
+                  volume += parseFloat(token.substr(2, token.length - 2));
+                } else if (token[1] == "v") {
+                  volume -= parseFloat(token.substr(2, token.length - 2));
+                } else if ("adsr".indexOf(token[1]) >= 0) {
+                  var adsrIndex = "adsr".indexOf(token[1]);
+                  adsr[adsrIndex] = parseFloat(
+                    token.substr(2, token.length - 2),
+                  );
+                  if (adsr[adsrIndex] < 0) {
+                    adsr[adsrIndex] = 0;
+                  }
+                  if (adsrIndex == 2 && adsr[adsrIndex] > 100) {
+                    adsr[adsrIndex] = 100;
+                  }
+                }
+              } else {
+                volume = parseFloat(token.substr(1, token.length - 1));
+              }
+              if (volume < 0.0) {
+                volume = 0.0;
+              } else if (volume > 1.0) {
+                volume = 1.0;
+              }
+            } else if (cmd == "%") {
+              // 건반 볼륨
+              if (token.length >= 2) {
+                if (token[1] == "^") {
+                  channelVolume +=
+                    parseFloat(token.substr(2, token.length - 2)) / 100.0;
+                } else if (token[1] == "v") {
+                  channelVolume -=
+                    parseFloat(token.substr(2, token.length - 2)) / 100.0;
+                } else {
+                  channelVolume =
+                    parseFloat(token.substr(1, token.length - 1)) / 100.0;
+                }
+                if (channelVolume < 0.0) {
+                  channelVolume = 0.0;
+                } else if (channelVolume > 1.0) {
+                  channelVolume = 1.0;
+                }
+              }
+            } else if (cmd == "(") {
+              // 루프 시작
+              var loopCount = parseInt(token.substr(1, token.length - 1));
+              loopStack.push(loopCount);
+            } else if (cmd == ")") {
+              // 루프 끝
+              if (loopStack.length > 0) {
+                var leftLoop = loopStack[loopStack.length - 1] - 1;
+                if (leftLoop > 0) {
+                  loopStack[loopStack.length - 1] = leftLoop;
+                  var skip = 0;
+                  for (--t; t >= 0; --t) {
+                    if (sheet[t][0] == ")") ++skip;
+                    else if (sheet[t][0] == "(") {
+                      --skip;
+                      if (skip < 0) {
+                        break;
+                      }
+                    }
+                  }
+                } else {
+                  loopStack.pop();
+                }
+              }
+            } else if (cmd == "#") {
+              // 루프 탈출
+              var breakCount = 1;
+              if (token.length >= 2) {
+                breakCount = parseInt(token.substr(1, token.length - 1));
+              }
+              if (loopStack.length > 0) {
+                var leftLoop = loopStack[loopStack.length - 1];
+                if (leftLoop <= breakCount) {
+                  var skip = 0;
+                  for (++t; t < sheet.length; ++t) {
+                    if (sheet[t][0] == "(") {
+                      ++skip;
+                    } else if (sheet[t][0] == ")") {
+                      --skip;
+                      if (skip < 0) {
+                        break;
+                      }
+                    }
+                  }
+                  loopStack.pop();
+                }
+              }
+            } else if (cmd == MusicMaker.TOKEN_START_TIME) {
+              // 시작 시간
+              startTime = time;
+            } else if (cmd == "^") {
+              // 옥타브 오프셋 상승
+              if (token.length >= 2) {
+                octaveOffset += parseInt(token.substr(1, token.length - 1));
+              } else {
+                octaveOffset += 1;
+              }
+            } else if (cmd == "v") {
+              // 옥타브 오프셋 하강
+              if (token.length >= 2) {
+                octaveOffset -= parseInt(token.substr(1, token.length - 1));
+              } else {
+                octaveOffset -= 1;
+              }
+            } else if (isNum(cmd)) {
+              // 지연
+              var data = token.split(":");
+              var timespan = (parseFloat(data[0]) * speed) / 1000.0;
+              var delay = data.length >= 2 ? parseFloat(data[1]) : 0;
+              delay = (delay * speed) / 1000.0;
+              var afterDelay = 0;
+              if (data.length >= 3) {
+                if (data[2][0] == "-") {
+                  afterDelay = -parseFloat(
+                    data[2].substr(1, data[2].length - 1),
+                  );
+                } else {
+                  afterDelay = parseFloat(data[2]);
+                }
+                afterDelay = (afterDelay * speed) / 1000.0;
+              }
+              if (timespan < 0.000001) {
+                timespan = prevDelay;
+              } else {
+                prevDelay = timespan;
+              }
+              if (currentScales.length > 0) {
+                // 음 지연
+                var realVolume = volume * channelVolume;
+                timespan -=
+                  Math.max(afterDelay, 0) * (currentScales.length - 1);
+                if (timespan < 1.0 / 44100) {
+                  timespan = 1.0 / 44100;
+                }
+                var timePos = time;
+                // 버퍼 채우기
+                for (var i = 0; i < currentScales.length; ++i) {
+                  if (callBack) {
+                    callBack(
+                      s,
+                      channelVolume,
+                      volume,
+                      speed,
+                      isBpm,
+                      bpm,
+                      timePos,
+                      currentScales[i],
+                      timespan,
+                      rawWaveKey,
+                      adsr,
+                    );
+                  } else {
+                    if (!(waveKey in notes)) notes[waveKey] = [];
+                    notes[waveKey].push({
+                      wave: convWaves,
+                      scale: currentScales[i],
+                      length: timespan,
+                      full: timespan + adsr[3] / 1000,
+                      clock: Math.round(44100 * timePos),
+                      volume: realVolume,
+                      attack: adsr[0],
+                      decay: adsr[1],
+                      sustain: adsr[2],
+                      release: adsr[3],
+                    });
+                  }
+                  timePos += delay;
+                  timespan -= delay - afterDelay;
+                  if (timespan < 1.0 / 44100) {
+                    timespan = 1.0 / 44100;
+                  }
+                }
+              } else {
+                // 순수 지연
+                time += timespan;
+              }
+            } else if (cmd >= "a" && cmd <= "g") {
+              // 음
+              var noteInfo = token.split(":");
+              if (noteInfo.length <= 1) {
+                var scale = MusicMaker.noteNameToScale(token);
+                scale = Math.max(scale + octaveOffset * 12, 0);
+                currentScales.push(scale);
+              } else if (t + 1 < sheet.length && isNum(sheet[t + 1][0])) {
+                // 쓸기
+                var isSweep = true;
+                var span = 0;
+                for (var i = t + 1; i < sheet.length; ++i) {
+                  if (isNum(sheet[i][0])) {
+                    if (sheet[i].indexOf(":") >= 0) {
+                      isSweep = false;
+                    } else {
+                      span = parseFloat(sheet[i]);
+                      // 지연 토큰이 바로 다음에 있고 누적된 음이 없으면 그 지연 토큰 무시
+                      if (i == t + 1 && currentScales.length <= 0) {
+                        ++t;
+                      }
+                    }
+                    break;
+                  }
+                }
+                var startScale = Math.max(
+                  MusicMaker.noteNameToScale(noteInfo[0]) + octaveOffset * 12,
+                  0,
+                );
+                var stopScale = Math.max(
+                  MusicMaker.noteNameToScale(noteInfo[1]) + octaveOffset * 12,
+                  0,
+                );
+                var scaleMove = 1;
+                if (startScale > stopScale) {
+                  scaleMove = -1;
+                }
+                var scaleCount = 1;
+                var scale = startScale + scaleMove;
+                while (
+                  (scaleMove > 0 && scale <= stopScale) ||
+                  (scaleMove < 0 && scale >= stopScale)
+                ) {
+                  // 음이 아닌 음만 계산
+                  switch (scale % 12) {
+                    case 0:
+                    case 2:
+                    case 4:
+                    case 5:
+                    case 7:
+                    case 9:
+                    case 11:
+                      ++scaleCount;
+                      break;
+                  }
+                  scale += scaleMove;
+                }
+                span = (span * speed) / 1000.0;
+                if (span < 0.000001) {
+                  span = prevDelay;
+                } else {
+                  prevDelay = span;
+                }
+                var delay = (span / scaleCount) * 0.99;
+                var sweepTime = time;
+                scale = startScale;
+                var realVolume = volume * channelVolume;
+                while (
+                  (scaleMove > 0 && scale <= stopScale) ||
+                  (scaleMove < 0 && scale >= stopScale)
+                ) {
+                  // 첫번째 음은 무조건 재생하고 그 외의 음이 아닌 음은 넘어감.
+                  if (scale != startScale) {
+                    switch (scale % 12) {
+                      case 1:
+                      case 3:
+                      case 6:
+                      case 8:
+                      case 10:
+                        scale += scaleMove;
+                        continue;
+                        break;
+                    }
+                  }
+                  var sndDelay = delay * 4;
+                  if (sweepTime + sndDelay > time + span) {
+                    sndDelay = Math.max(time + span - sweepTime, 0);
+                    if (sndDelay < 1.0 / 44100) {
+                      break;
+                    }
+                  }
+                  if (isSweep) {
+                    if (callBack) {
+                      callBack(
+                        s,
+                        channelVolume,
+                        volume,
+                        speed,
+                        isBpm,
+                        bpm,
+                        sweepTime,
+                        scale,
+                        sndDelay,
+                        rawWaveKey,
+                        adsr,
+                      );
+                    } else {
+                      if (!(waveKey in notes)) notes[waveKey] = [];
+                      notes[waveKey].push({
+                        wave: convWaves,
+                        scale: scale,
+                        length: sndDelay,
+                        full: sndDelay + adsr[3] / 1000,
+                        clock: Math.round(44100 * sweepTime),
+                        volume: realVolume,
+                        attack: adsr[0],
+                        decay: adsr[1],
+                        sustain: adsr[2],
+                        release: adsr[3],
+                      });
+                    }
+                  } else {
+                    currentScales.push(scale);
+                  }
+                  sweepTime += delay;
+                  scale += scaleMove;
+                }
+              }
+              if (cmd < "a" || cmd > "g") {
+                currentScales = [];
+              }
+            }
+          }
+        }
+        // 버퍼 여기서 만들기
+        const cmp = (a, b) => {
+          if (a.scale != b.scale) return a.scale - b.scale;
+          if (a.full != b.full) return a.full - b.full;
+          if (a.attack != b.attack) return a.attack - b.attack;
+          if (a.decay != b.decay) return a.decay - b.decay;
+          if (a.sustain != b.sustain) return a.sustain - b.sustain;
+          return a.release - b.release;
+        };
+        for (const w in notes) {
+          notes[w].sort(cmp);
+          const pcm = [0];
+          for (const w in notes) {
+            const arr = notes[w];
+            let beforeAdsr = null;
+            let afterAdsr = null;
+            let gens = null;
+            for (let i = 0; i < arr.length; ++i) {
+              if (i == 0 || arr[i - 1].scale != arr[i].scale) {
+                let maxlen = 0;
+                for (
+                  let j = i;
+                  j < arr.length && arr[i].scale == arr[j].scale;
+                  j++
+                )
+                  maxlen = Math.max(maxlen, arr[j].full);
+                beforeAdsr = [];
+                gens = MusicMaker.makeGenerator(
+                  beforeAdsr,
+                  arr[i].wave,
+                  arr[i].scale,
+                  maxlen,
+                  opMap,
+                );
+                gens.forEach((gen) => gen.generate(arr[i].full));
+                afterAdsr = MusicMaker.applyAdsr(
+                  beforeAdsr,
+                  arr[i].attack,
+                  arr[i].decay,
+                  arr[i].sustain,
+                  arr[i].release,
+                  arr[i].length * 44100,
+                );
+              } else if (arr[i - 1].full != arr[i].full) {
+                gens.forEach((gen) => gen.generate(arr[i].full));
+                afterAdsr = MusicMaker.applyAdsr(
+                  beforeAdsr,
+                  arr[i].attack,
+                  arr[i].decay,
+                  arr[i].sustain,
+                  arr[i].release,
+                  arr[i].length * 44100,
+                );
+              } else if (
+                arr[i - 1].attack != arr[i].attack ||
+                arr[i - 1].decay != arr[i].decay ||
+                arr[i - 1].sustain != arr[i].sustain ||
+                arr[i - 1].release != arr[i].release
+              )
+                afterAdsr = MusicMaker.applyAdsr(
+                  beforeAdsr,
+                  arr[i].attack,
+                  arr[i].decay,
+                  arr[i].sustain,
+                  arr[i].release,
+                  arr[i].length * 44100,
+                );
+              while (pcm.length < afterAdsr.length + arr[i].clock) pcm.push(0);
+              for (let j = 0; j < afterAdsr.length; j++)
+                pcm[j + arr[i].clock] += afterAdsr[j] * arr[i].volume;
+            }
+          }
+          // 정규화
+          let maxVolume = 1;
+          for (const i of pcm) maxVolume = Math.max(maxVolume, Math.abs(i));
+          for (var i = 0; i < pcm.length; ++i) pcm[i] /= maxVolume;
+          return new MusicResult(Sound.fromPcm(pcm, 44100), startTime, speed);
+        }
+      };
+      MusicMaker.applyAdsr = function (
+        src,
+        attack,
+        decay,
+        sustain,
+        release,
+        relIdx,
+      ) {
+        const dst = new Array(src.length);
+        let maxVol = 1;
+        for (const v of src) maxVol = Math.max(maxVol, Math.abs(v));
+        const relScale = sustain / 100;
+        let atkspd = 1 / ((attack / 1000) * 44100);
+        let decspd =
+          decay <= 0 ? 1 - relScale : (1 - relScale) / ((decay / 1000) * 44100);
+        let relspd = 0;
+        let adsrMode = 0;
+        let adsrScale = 0;
+        if (attack <= 0) {
+          adsrMode = 1;
+          adsrScale = 1;
+        }
+        for (let i = 0; i < src.length; i++) {
+          const ampl = (Math.pow(10, adsrScale) - 1) / 9;
+          dst[i] = (src[i] * ampl) / maxVol;
+          if (adsrMode < 3 && i >= relIdx) {
+            adsrMode = 3;
+            relspd =
+              release > 0 ? adsrScale / ((release / 1000) * 44100) : adsrScale;
+          }
+          if (adsrMode == 0) {
+            adsrScale += atkspd;
+            if (adsrScale >= 1) {
+              adsrScale = 1;
+              adsrMode = 1;
+            }
+          } else if (adsrMode == 1) {
+            adsrScale -= decspd;
+            if (adsrScale <= relScale) {
+              adsrScale = relScale;
+              adsrMode = -1;
+            }
+          } else if (adsrMode == 3) {
+            if (release < 0.000001) adsrScale = 0;
+            else {
+              adsrScale -= relspd;
+              if (adsrScale < 0) adsrScale = 0;
+            }
+          }
+        }
+        return dst;
+      };
+      MusicMaker.noteNameToScale = function (name) {
+        var scale = MusicMaker.noteNameIndex[name[0]];
+        if (name.length > 1) {
+          if (name[1] == "#") {
+            // 반음이만
+            scale += 1;
+            if (name.length > 2) {
+              // 옥타브 적용
+              scale += parseInt(name.substr(2, name.length - 2)) * 12;
+            }
+          } else {
+            // 옥타브 적용
+            scale += parseInt(name.substr(1, name.length - 1)) * 12;
+          }
+        }
+        return scale;
+      };
+      MusicMaker.makeGenerator = function (
+        buffer,
+        convWaves,
+        scale,
+        length,
+        opMap,
+      ) {
+        const freq = Sound.scaleToFrequency(scale, 0);
+        const gens = [];
+        // 파형 합성
+        for (const convWave of convWaves) {
+          var waveName = convWave[0];
+          var waveVolume = convWave[1];
+          var waveHarmonic = 1;
+          if (opMap.has(waveName) == false) {
+            var nameEndIndex = -1;
+            for (var i = 0; i < waveName.length; ++i) {
+              if (isNum(waveName[i]) || waveName[i] == ".") {
+                nameEndIndex = i;
+                break;
+              }
+            }
+            if (nameEndIndex >= 0) {
+              waveHarmonic = parseFloat(
+                waveName.substring(nameEndIndex, waveName.length),
+              );
+              waveName = waveName.substr(0, nameEndIndex);
+            }
+          }
+          if (waveName == "sin")
+            gens.push(
+              new SinPCMGenerator(buffer, freq * waveHarmonic, waveVolume),
+            );
+          else if (waveName == "sqr")
+            gens.push(
+              new SquarePCMGenerator(buffer, freq * waveHarmonic, waveVolume),
+            );
+          else if (waveName == "tri")
+            gens.push(
+              new TrianglePCMGenerator(buffer, freq * waveHarmonic, waveVolume),
+            );
+          else if (waveName == "saw")
+            gens.push(
+              new SawPCMGenerator(buffer, freq * waveHarmonic, waveVolume),
+            );
+          else if (waveName == "noise")
+            gens.push(new NoiseGenerator(buffer, waveVolume));
+          else if (opMap.has(waveName))
+            gens.push(
+              new FMSynthesisPCMGenerator(
+                buffer,
+                freq * waveHarmonic,
+                waveVolume,
+                opMap.get(waveName),
+                length,
+              ),
+            );
+          else
+            gens.push(
+              new SinPCMGenerator(buffer, freq * waveHarmonic, waveVolume),
+            );
+        }
+        if (gens.length == 0) gens.push(new SinPCMGenerator(buffer, freq, 1));
+        return gens;
+      };
+      MusicMaker.getWaveBuffer = function (
+        convWaves,
+        waveKey,
+        scale,
+        time,
+        opMap,
+      ) {
+        var cache = null;
+        var subKey = scale + ":" + time;
+        if (MusicMaker.waveCache.has(waveKey)) {
+          cache = MusicMaker.waveCache.get(waveKey);
+          if (cache.has(subKey)) {
+            return cache.get(subKey);
+          }
+        } else {
+          // 캐시 크기가 너무 커지면 비움.
+          if (MusicMaker.waveCache.size >= MusicMaker.MAX_CACHE_SIZE) {
+            MusicMaker.waveCache.clear();
+          }
+          cache = new Map();
+          MusicMaker.waveCache.set(waveKey, cache);
+        }
+        // 캐시 크기가 너무 커지면 비움.
+        if (cache.size >= MusicMaker.MAX_SUBCACHE_SIZE) {
+          cache.clear();
+        }
+        // 없으면 새로 만듬.
+        var buffer = MusicMaker.makeWave(
+          convWaves,
+          scale,
+          time,
+          opMap || new Map(),
+        );
+        cache.set(subKey, buffer);
+        return buffer;
+      };
+      MusicMaker.makeWave = function (convWaves, scale, time, opMap) {
+        const rate = 44100;
+        const freq = Sound.scaleToFrequency(scale, 0);
+        var buffer = [];
+        // 파형 합성
+        for (var w = 0; w < convWaves.length; ++w) {
+          var waveName = convWaves[w][0];
+          var waveVolume = convWaves[w][1];
+          var waveHarmonic = 1;
+          if (opMap.has(waveName) == false) {
+            var nameEndIndex = -1;
+            for (var i = 0; i < waveName.length; ++i) {
+              if (isNum(waveName[i]) || waveName[i] == ".") {
+                nameEndIndex = i;
+                break;
+              }
+            }
+            if (nameEndIndex >= 0) {
+              waveHarmonic = parseFloat(
+                waveName.substring(nameEndIndex, waveName.length),
+              );
+              waveName = waveName.substr(0, nameEndIndex);
+            }
+          }
+          var wave = null;
+          var soundFunc = Sound.makeSinWave.bind(Sound);
+          if (waveName == "sin") {
+            soundFunc = Sound.makeSinWave.bind(Sound);
+          } else if (waveName == "sqr") {
+            soundFunc = Sound.makeSquareWave.bind(Sound);
+          } else if (waveName == "tri") {
+            soundFunc = Sound.makeTriangleWave.bind(Sound);
+          } else if (waveName == "saw") {
+            soundFunc = Sound.makeSawWave.bind(Sound);
+          } else if (waveName == "noise") {
+            soundFunc = function (frequency, amplitude, duration, sampleRate) {
+              Sound.makeWave(frequency, duration, sampleRate, function (deg) {
+                return Math.random() * 2 * amplitude - amplitude;
+              });
+            };
+          } else if (opMap.has(waveName)) {
+            var sampleRate = 44100;
+            var modulator = opMap.get(waveName);
+            wave = new Array(Math.ceil(sampleRate * time));
+            var mulFreq = freq * waveHarmonic;
+            if (modulator.reset) {
+              modulator.reset();
+            }
+            for (var t = 0; t < wave.length; ++t) {
+              wave[t] =
+                modulator.calculate(t / sampleRate, mulFreq, 0, []) *
+                waveVolume;
+            }
+          }
+          if (wave == null) {
+            wave = soundFunc(freq * waveHarmonic, waveVolume, time, rate);
+          }
+          while (buffer.length < wave.length) {
+            buffer.push(0);
+          }
+          for (var i = 0; i < wave.length; ++i) {
+            buffer[i] += wave[i];
+          }
+        }
+        if (buffer.length <= 0) {
+          buffer = Sound.makeSinWave(freq, 1, time, rate);
+        }
+        // 정규화
+        var maxVolume = 1;
+        for (var i = 0; i < buffer.length; ++i) {
+          var abs = Math.abs(buffer[i]);
+          if (maxVolume < abs) {
+            maxVolume = abs;
+          }
+        }
+        for (var i = 0; i < buffer.length; ++i) {
+          buffer[i] /= maxVolume;
+        }
+        return buffer;
+      };
     </script>
   </head>
   <body></body>
