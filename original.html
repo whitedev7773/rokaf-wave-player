@@ -2990,6 +2990,386 @@
         return buffer;
       };
     </script>
+    <script type="text/javascript">
+      function MusicPlayer() {
+        this.playing = false;
+        this.music = null;
+        this.originMusic = null;
+        this.prevSheet = "";
+        this.offset = 0;
+        this.volume = 1;
+        this.whenEnd = function () {};
+      }
+      MusicPlayer.prototype.update = function () {
+        if (this.music != null) {
+          if (this.playing && this.music.onPlaying() == false) {
+            this.playing = false;
+            // 종료 이벤트
+            if (this.whenEnd) {
+              this.stop();
+              this.whenEnd();
+            }
+          }
+        }
+        if (this.originMusic != null) {
+          var index = Math.floor(this.getCurrentTime() * 44100);
+          var buffer = this.originMusic.getBuffer();
+        }
+      };
+      MusicPlayer.prototype.load = function (sheet) {
+        // 새로운 악보이거나 악보에 시작 시간이 설정되어
+        // 있거나
+        // 불러온 노래가 없으면
+        if (
+          this.prevSheet != sheet ||
+          sheet.indexOf(MusicMaker.TOKEN_START_TIME) >= 0 ||
+          this.music == null
+        ) {
+          // 이전 노래 정지
+          if (this.music != null) {
+            this.music.stop();
+          }
+          var musicData = MusicMaker.createMusic(sheet);
+          this.originMusic = musicData.sound;
+          this.music = Sound.fromPcm(this.originMusic.getBuffer(), 44100);
+          this.prevSheet = sheet;
+          this.offset = 0;
+          // 설정된 시작 시간이 있으면 시간 설정
+          if (musicData.startTime > 0) {
+            this.setCurrentTime(musicData.startTime);
+          }
+          return musicData;
+        }
+        return null;
+      };
+      MusicPlayer.prototype.loadSound = function (snd) {
+        // 이전 노래 정지
+        if (this.music != null) {
+          this.music.stop();
+        }
+        this.originMusic = snd;
+        this.music = Sound.fromPcm(this.originMusic.getBuffer(), 44100);
+        this.prevSheet = "neurowhai";
+        this.offset = 0;
+      };
+      MusicPlayer.prototype.play = function (sheet) {
+        var result = this.load(
+          sheet
+            .replace(/(\+HIW<더하기W>)|W<플러스W>|W<PLUSW>|W[PLUSW])/g, "+")
+            .replace(/(%W<퍼센트W>|W[퍼센트W])/g, "%"),
+        );
+        this.playing = true;
+        this.music.setVolume(this.volume);
+        this.music.play();
+        return result;
+      };
+      MusicPlayer.prototype.playSound = function (snd) {
+        this.loadSound(snd);
+        this.playing = true;
+        this.music.setVolume(this.volume);
+        this.music.play();
+      };
+      MusicPlayer.prototype.pause = function () {
+        this.playing = false;
+        this.setCurrentTime(this.getCurrentTime());
+      };
+      MusicPlayer.prototype.stop = function () {
+        this.playing = false;
+        this.offset = 0;
+        if (this.music != null) {
+          this.music.stop();
+        }
+        if (this.originMusic != null) {
+          this.music = Sound.fromPcm(this.originMusic.getBuffer(), 44100);
+        }
+      };
+      MusicPlayer.prototype.onPlaying = function () {
+        return this.playing;
+      };
+      MusicPlayer.prototype.getCurrentTime = function () {
+        if (this.music == null) {
+          return 0;
+        }
+        return Math.min(
+          this.music.currentTime() + this.offset,
+          this.getDuration(),
+        );
+      };
+      MusicPlayer.prototype.getDuration = function () {
+        if (this.originMusic == null) {
+          return 0.0001;
+        }
+        return this.originMusic.duration();
+      };
+      MusicPlayer.prototype.setCurrentTime = function (time) {
+        if (this.music != null) {
+          this.offset = time;
+          this.music.stop();
+          var originBuffer = this.originMusic.getBuffer();
+          var index = Math.min(
+            Math.floor(time * 44100),
+            originBuffer.length - 1,
+          );
+          var buffer = [];
+          for (var i = index; i < originBuffer.length; ++i) {
+            buffer.push(originBuffer[i]);
+          }
+          this.music = Sound.fromPcm(buffer, 44100);
+          this.music.setVolume(this.volume);
+          if (this.playing) {
+            this.music.play();
+          }
+        }
+      };
+      MusicPlayer.prototype.setVolume = function (volume) {
+        this.volume = volume;
+        if (this.music !== null) {
+          this.music.setVolume(this.volume);
+        }
+      };
+      MusicPlayer.prototype.getVolume = function () {
+        return this.volume;
+      };
+      function TestSheet() {
+        this.position = Vector.zero();
+        this.index = 0;
+        this.localInfo = TestSheet.NoteInfo.Normal;
+        this.globalHalf = [0, 0, 0, 0, 0, 0, 0];
+        this.width = 128;
+        this.gap = 12;
+        this.extension = 7;
+        this.isMajor = true;
+        this.result = null;
+      }
+      TestSheet.NoteInfo = {
+        Normal: 0,
+        Up: 1,
+        Down: 2,
+        Original: 3,
+        COUNT: 4,
+      };
+      TestSheet.IndexToName = ["c", "d", "e", "f", "g", "a", "b"];
+      TestSheet.prototype.getWidth = function () {
+        return this.width + this.gap * 2;
+      };
+      TestSheet.prototype.getHeight = function () {
+        return (6 + this.extension * 2) * this.gap;
+      };
+      TestSheet.prototype.getTop = function () {
+        return this.position.y - (5 + this.extension) * this.gap;
+      };
+      TestSheet.prototype.getLeft = function () {
+        return this.position.x - this.gap;
+      };
+      TestSheet.prototype.update = function () {
+        const isFirstUpdate = this.result === null;
+        if (g_mouse.onDown() || g_mouse.onPressed()) {
+          var cursor = g_mouse.getCursor();
+          if (
+            cursor.x > this.getLeft() &&
+            cursor.x < this.position.x + this.width / 2 &&
+            cursor.y > this.getTop() &&
+            cursor.y < this.position.y - 5 * this.gap
+          ) {
+            if (g_mouse.onPressed() == false) {
+              this.isMajor = !this.isMajor;
+              this.result = null;
+            }
+          } else if (
+            cursor.x > this.getLeft() &&
+            cursor.x < this.getLeft() + this.getWidth() &&
+            cursor.y > this.getTop() &&
+            cursor.y < this.getTop() + this.getHeight()
+          ) {
+            var index =
+              (this.position.y - cursor.y + this.gap / 4) / (this.gap / 2);
+            index = Math.floor(index) + 2;
+            // 조표, 음표 조정
+            if (cursor.x > this.position.x + this.width / 2) {
+              if (this.index == index) {
+                if (g_mouse.onPressed() == false) {
+                  this.localInfo += 1;
+                  if (this.localInfo >= TestSheet.NoteInfo.COUNT) {
+                    this.localInfo = 0;
+                  }
+                  this.result = null;
+                }
+              } else {
+                this.index = index;
+                this.localInfo = TestSheet.NoteInfo.Normal;
+                this.result = null;
+              }
+            } else if (g_mouse.onPressed() == false) {
+              if (index >= 7) {
+                index -= 7;
+              }
+              if (index >= 0 && index < this.globalHalf.length) {
+                if (this.globalHalf[index] > 0) {
+                  this.globalHalf[index] = -1;
+                } else if (this.globalHalf[index] < 0) {
+                  this.globalHalf[index] = 0;
+                } else {
+                  this.globalHalf[index] = 1;
+                }
+              }
+              this.result = null;
+            }
+          }
+        }
+        if (this.result === null) {
+          var offset = this.isMajor ? 0 : -12;
+          var octave = Math.floor((this.index + offset + 7 + 4) / 7);
+          var index = this.index % 7;
+          if (index < 0) {
+            index += 7;
+          }
+          var half = "";
+          if (this.localInfo == TestSheet.NoteInfo.Up) {
+            half = "#";
+          } else if (this.localInfo == TestSheet.NoteInfo.Down) {
+            half = "b";
+          } else if (this.localInfo == TestSheet.NoteInfo.Normal) {
+            if (this.globalHalf[index] > 0) {
+              half = "#";
+            } else if (this.globalHalf[index] < 0) {
+              half = "b";
+            }
+          }
+          index = (this.index + offset) % 7;
+          if (index < 0) {
+            index += 7;
+          }
+          if (half == "#") {
+            if (index == 2 || index == 6) {
+              half = "";
+              if (index == 6) {
+                octave += 1;
+              }
+              index += 1;
+            }
+          } else if (half == "b") {
+            if (index == 0 || index == 3) {
+              half = "";
+              if (index == 0) {
+                octave -= 1;
+              }
+            } else {
+              half = "#";
+              index -= 1;
+            }
+          }
+          if (index < 0) {
+            index += 7;
+          }
+          var name = TestSheet.IndexToName[index % 7];
+          this.result = name + half + octave;
+        }
+      };
+      TestSheet.prototype.render = function (g) {
+        // 배경
+        g.beginFillRect("white");
+        g.fillRect(
+          this.getLeft(),
+          this.getTop(),
+          this.getWidth(),
+          this.getHeight(),
+        );
+        g.endFillRect();
+        // 음자리표
+        var keyText = this.isMajor ? "높은" : "낮은";
+        g.beginDrawText("black", "18px");
+        g.drawText(
+          keyText,
+          this.position.x + this.gap,
+          this.position.y - 6 * this.gap,
+        );
+        g.endDrawText();
+        // 선
+        for (var i = -this.extension; i < 5 + this.extension; ++i) {
+          var xPos = this.position.x;
+          var yPos = this.position.y - this.gap * i;
+          var width = this.width;
+          if (i < 0 || i > 5) {
+            xPos = this.position.x + this.width / 2;
+            width = this.width / 3;
+          }
+          g.beginDrawText("black", Math.floor(this.gap) + "px");
+          g.drawText(
+            "" + (i < 0 ? -i : 4),
+            xPos + width + 2,
+            yPos + this.gap / 3,
+          );
+          g.endDrawText();
+          g.beginDrawLine("black", 2);
+          g.drawLine(xPos, yPos, xPos + width, yPos);
+          g.endDrawLine();
+        }
+        // 음표
+        var noteX = this.position.x + (this.width / 9) * 6;
+        var noteY = this.position.y - ((this.index - 2) * this.gap) / 2;
+        g.beginTransform();
+        g.translate(noteX, noteY);
+        g.scale(1.5, 1);
+        g.beginFillCircle("black");
+        g.fillCircle(0, 0, this.gap / 2);
+        g.endFillCircle();
+        g.endTransform();
+        // 조표
+        g.beginDrawText("black", Math.floor(this.gap * 2) + "px");
+        for (var i = 0; i < this.globalHalf.length; ++i) {
+          var text = "";
+          var offsetY = 0;
+          if (this.globalHalf[i] > 0) {
+            text = "#";
+            offsetY = 4;
+          } else if (this.globalHalf[i] < 0) {
+            text = "b";
+            offsetY = 2;
+          } else {
+            continue;
+          }
+          var xPos = this.position.x + this.gap;
+          var yPos =
+            this.position.y + this.gap - (i * this.gap) / 2 + this.gap * 0.5;
+          if (i <= 3) {
+            yPos -= this.gap * 3.5;
+          }
+          var xIndex = i;
+          if (i >= 4) {
+            xIndex -= 4;
+          } else if (i == 3) {
+            xIndex = 0;
+          }
+          xPos += xIndex * this.gap * 1.5;
+          g.drawTextCenter(text, xPos, yPos + offsetY);
+        }
+        var localText = "";
+        var localOffsetY = 0;
+        if (this.localInfo == TestSheet.NoteInfo.Up) {
+          localText = "#";
+          localOffsetY = 3;
+        } else if (this.localInfo == TestSheet.NoteInfo.Down) {
+          localText = "b";
+          localOffsetY = 0;
+        } else if (this.localInfo == TestSheet.NoteInfo.Original) {
+          localText = "♮";
+        }
+        g.drawTextCenter(
+          localText,
+          noteX - 15,
+          noteY + this.gap * 0.6 + localOffsetY,
+        );
+        g.endDrawText();
+        // 결과
+        g.beginDrawText("black", "18px");
+        g.drawText(
+          this.result,
+          this.position.x + this.gap,
+          this.position.y + this.gap * 3,
+        );
+        g.endDrawText();
+      };
+    </script>
   </head>
   <body></body>
 </html>
