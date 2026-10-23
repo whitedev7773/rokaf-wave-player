@@ -1,20 +1,287 @@
 <!doctype html>
+<!doctype html>
 <!--
-    Chrome(v39)으로 실행하세요.
-    Music Pllayer의 열화판으로서 자체적인 언어를 통해 파동의 변환과 조합을 이루어 우주의 소리를 표현하는 기본적인 예시입니다.
-    <인터페이스 - 공통>
-    - 재생바: 클릭한 곳에서 곡을 재생합니다.
-    - 파형: 재생되고 있는 곡 파형의 시각화 수행. 클릭 시 모드 변경.
-    재생/일시정지
-    정지
-    <인터페이스- 코딩>
-    - Seq: 시퀀서 모드로 전환합니다.
-    - New: 새로운 악보를 만듭니다.
-    - Save: 만든 악보를 저장합니다
-    - Shift+Save: 내용을 파일로 다운로드합니다.
-    - Load: 외부파일에서 악보를 불러옵니다.
-    
-    아 귀찮아 주석은 일단 미룰래
+Chrome(v39)으로 실행하세요.
+
+Music Player의 열화판으로서 자체적인 언어를 통해 파동의
+변환과 조합을 이루어 우주의 소리를 표현하는 기본적인 예시입니다.
+
+Dev by 775 신동현
+Designed by 766 윤진수, 775 신동현
+
+<인터페이스 - 공통>
+- 재생바 : 클릭한 곳에서 곡을 재생합니다.
+- 파형 : 재생되고 있는 곡 파형의 시각화 수행. 클릭 시 모드 변경.
+- ▶/Ⅱ : 재생/일시정지
+- ■ : 정지
+
+<인터페이스 - 코딩>
+- Seq : 시퀀서 모드로 전환합니다.
+- New : 새로운 악보를 만듭니다.
+- Save : 만든 악보를 저장합니다.
+- 'Shift' + Save : 내용을 파일로 다운로드 합니다.
+- Load : 외부 파일에서 악보를 불러옵니다.
+- |< / >| : 이전/다음 곡으로 이동합니다.
+- 음 확인 : 우측 하단의 악보에서 음자리표, 조표, 음표에
+  따라 음을 어떻게 표기하면 되는지 알려줍니다.
+
+<인터페이스 - 시퀀서(코드)>
+- Code : 코딩 모드로 전환합니다.
+- Save : 내용을 코드로 복사합니다.
+- 'Shift' + Save : 내용을 파일로 다운로드 합니다.
+- Load : 코드를 시퀀서로 변환하여 가져옵니다.
+- 'Shift' + Load : 외부 파일에서 코드를 불러옵니다.
+- |< / >| : 이전/다음 시퀀서로 전환합니다.
+- 동시 재생 : 단일 시퀀서 화면일 때 재생 시 다른 시퀀서들도
+  재생할지 여부.
+- 'Backspace(←)' or 'Home' : 가로 스크롤을 처음으로 돌립니다.
+- 'Shift' + '0'~'9' : 번호에 해당하는 시퀀서로 전환합니다.
+- 'Ctrl' + '1'~'9' : 박자를 n/a로 변경합니다.
+- (상단 마디 번호 영역) 클릭 : 해당 시간 위치에서 재생합니다.
+
+<인터페이스 - 시퀀서(다중)>
+- Clear : 모든 시퀀서를 리셋합니다.
+- (좌측에서) 마우스 휠 : 세로 스크롤을 조절합니다.
+- (우측에서) 마우스 휠 : 가로 스크롤을 조절합니다.
+- 'Shift' + 마우스 휠 : 가로/세로 스크롤을 크게 조절합니다.
+- (좌측에서) 좌클릭 : 선택한 시퀀서를 끄거나 켭니다.
+- (우측에서) 좌클릭 : 선택한 시퀀서를 편집합니다.
+- (좌측) 상하 스크롤 바 : 해당 채널의 볼륨을 조절합니다.
+
+<인터페이스 - 시퀀서(단일)>
+- Clear : 현재 시퀀서를 리셋합니다.
+- (피아노 부분에서) 'Alt' + 마우스 휠 :
+  노트의 세로 크기를 조절합니다.
+- (노트 부분에서) 마우스 휠 :
+  노트의 단위 비트당 가로 길이를 조절합니다.
+- (피아노 부분에서) 마우스 휠 : 세로 스크롤을 조절합니다.
+- (노트 부분에서) 마우스 휠 : 가로 스크롤을 조절합니다.
+- 'Shift' + 마우스 휠 : 가로/세로 스크롤을 크게 조절합니다.
+- 'Alt' + 드래그 : 커서 이동을 통해 가로, 세로 스크롤을
+  동시에 조절합니다.
+- 좌클릭 : 새 노트를 이전 노트의 길이로 배치하거나 선택합니다.
+- 'Ctrl' + 좌클릭 후 드래그 : 여러 노트를 선택합니다.
+- 드래그 : 선택된 노트를 이동합니다.
+- 'Shift' + 좌클릭/드래그 : 선택된 노트의 길이를 조절합니다.
+- 'Delete' : 선택된 노트를 삭제합니다.
+- 'Ctrl' + 'C' : 선택된 노트를 복사합니다.
+- 'Ctrl' + 'X' : 선택된 노트를 복사하고 제거합니다.
+- 'Ctrl' + 'V' : 복사한 노트를 커서의 위치에 붙여넣습니다.
+- '1'~'9' : 단위 비트를 1/n 비트로 설정합니다.
+- 'Esc' : 노트 선택을 취소하거나 전체 시퀀서 화면으로 전환합니다.
+- 'V' : 볼륨 그래프를 엽니다.
+- 방향키 : 선택된 노트를 해당 방향으로 이동합니다.
+- 'Shift' + 방향키 : 선택된 노트를 해당 방향으로 크게 이동합니다.
+
+<인터페이스 - 시퀀서(볼륨)>
+- 'V' : 볼륨 그래프를 닫습니다.
+- 좌클릭 : 볼륨 지점을 선택하거나 생성합니다.
+- 드래그 : 볼륨 지점을 이동합니다.
+- 'Delete' : 선택된 볼륨 지점을 삭제합니다.
+
+<직접 만들기>
+도미솔 화음 연주해보기
+
+- 악보 입력란을 비웁니다.
+- 첫째 줄에 "$ 튜토리얼"이라고 곡 제목을 입력합니다.
+- '$'는 주석 명령어입니다. 한 줄에서 이 문자 뒤의 내용은
+  무시됩니다.
+- 다음 줄에 "- Main"을 적어서 채널을 선언합니다.
+  채널이 하나일 경우에도 지정하는 것이 권장됩니다.
+- 다음 줄에 "~sqr1"을 적어서 파형을 설정합니다.
+  1배음의 사각파를 뜻합니다.
+
+  (sin: 사인파, sqr: 사각파, tri: 삼각파, saw: 톱니파)
+
+새로운 파형이 지정되기 전까지 이렇게 설정한 파형으로 음이
+연주됩니다.
+
+각 파형, 배음의 조합에 따라 여러 음색을 표현할 수 있습니다.
+
+- 다음 줄에 "*100"을 적어서 ms per beat를 설정합니다.
+  추후 나오겠지만 음의 길이는 비트 단위로 표현하며
+  "*100"은 한 비트당 100ms(0.1초)로 설정하라는 말입니다.
+  즉, 이 값이 작을수록 곡이 빠르게 연주됩니다.
+
+- 이제 음을 찍기 위한 기본적인 준비가 끝났습니다.
+  참고로 파형, 속도 등의 정보는 채널별로 독립적이라 따로
+  설정해주어야 합니다.
+
+- 여기서 음을 나타내는 알파벳과 반음 올림을 나타내는 '#',
+  옥타브, 길이로 표현됩니다.
+  예를 들어 "c#4 2"라고 하면 4옥타브에서 [판독 불확실]
+  의 길이로 연주하라는 뜻입니다.
+  (반음 내림을 표현하는 기호는 없습니다. 올림으로 대체하셔야 합니다.)
+
+- 우리의 목표는 도, 미, 솔 차례로 연주한 다음 다시 동시에
+  연주하는 것입니다.
+
+  도~~ 미~~ 솔~~ (도미솔)~~
+
+- 다음 줄에 "c4 5 0"이라고 적고 재생 버튼을 눌러 재생해봅시다.
+  c4음이 0.5초간 재생되면 성공입니다.
+
+- 그런데 "c4 5"까지는 설명했지만 그 뒤의 숫자 "0"은 설명하지
+  않았습니다.
+  음(c4)의 바로 뒤에 붙은 숫자는 음의 길이를 뜻하지만
+  그 외의 숫자는 시간의 흐름을 나타냅니다.
+  즉, 음을 연주하는 것만으로는 시간이 흐르지 않습니다.
+  다르게 말해서 대기 시간이라고도 볼 수 있습니다.
+
+  또한 0은 편의를 위해 이전 숫자와 같은 값을 뜻합니다.
+  즉, "c4 5 5"와 같고 이는 "c4를 5비트간 연주하고 시간을
+  5비트 흐르게 하라"는 뜻입니다.
+
+- 띄어쓰기를 하고 이어서 "c4 5 0 e4 5 0 g4 5 0"이라고 적고
+  재생해봅시다.
+  도~~ 미~~ 솔~~ 까지 나왔으면 성공입니다.
+
+- 다음은 동시 연주입니다. 시간의 흐름과 별개라는 특성 덕분에
+  동시 연주를 쉽게 할 수 있습니다.
+- 띄어쓰기를 하고 이어서 "c4 5 e4 5 g4 5 0"이라고 적고
+  재생해봅시다.
+
+축하합니다! 목표를 달성했습니다.
+
+주목해야 할 점은 c4와 e4의 연주 시간이 붙어 있지 않은데도
+g4의 시간과 동일하게 적용되었다는 것입니다.
+이는 내부 구현에 따른 행동인데 음의 연주 시간이 나오기
+전까지는 음을 차곡차곡 기억해두었다가 연주 시간이 나왔을 때
+전부 꺼내서 해당 시간으로 연주하기 때문입니다.
+
+즉, "c4 5 e4 5 g4 5 0"이라고 적지 않아도 됩니다.
+
+- 만약 도, 미, 솔 차례로 연주하되 연주를 마치는 건 동시에
+  하고 싶다면
+  "c4 5 1 e4 4 1 g4 3 0" 이렇게 할 수 있습니다.
+  한 번 분석해보세요.
+
+<문법>
+계 := c, c#, d, d#, e, f, f#, g, g#, a, a#, b
+시간 := (실수(beat))
+지연 := (시간)
+음 := {계}(옥타브)
+지연 동시 연주 := {시작 지연}:{종료 지연}:{종료 지연}
+스윕 := {시작음}:{종료음}
+옥타브 오프셋 증가/감소 :
+  ^1은 1옥타브 상승, ^2는 2옥타브 상승을 뜻하며
+  v1은 1옥타브 감소, v2는 2옥타브 감소를 뜻합니다.
+  (기호는 사진상 판독 불확실)
+
+옥타브 오프셋이 0(기본)이라는 가정하에 ^1 c4는 c5와 동일하며
+v4 c4는 c0과 동일합니다.
+
+옥타브 오프셋은 한번 변경되면 다시 증가/감소하기 전까지 계속
+유지됩니다.
+
+- 볼륨 : 실제 볼륨은 채널 볼륨(%)에 일반 볼륨을 곱한 값입니다.
+  이를 이용해 악보에서 연주의 강약을 조절하고 전체적인 볼륨은
+  볼륨 조절하면 됩니다.
+- 반복 : {2 c4 1 0}은 c4 1 0 c4 1 0과 동일합니다.
+  이를 이용해 원하는 시점에 반복을 초기화할 수 있습니다.
+
+<설정>
+- 악보 입력란의 글자 크기가 마음에 안 들면 CSS에서
+  textarea의 font-size를 바꾸시면 됩니다.
+- 컴퓨터의 메모리가 충분하다면 MusicMaker의
+  MAX_CACHE_SIZE와 MAX_SUBCACHE_SIZE의 값을 늘리면
+  조금 더 빨라집니다.
+
+<파형 문법>
+sin: 사인파
+sqr: 사각파
+tri: 삼각파
+saw: 톱니파
+noise: 노이즈 파형
+low, high: 패스 필터
+feedback: 피드백
+
+파형/연산 정의 :=
+  &{이름}:{종류}:{주파수}
+  | &{이름}:{종류}{배음}
+
+파형 변조 그래프 연결 :=
+  [{이름(변조파)}:{변조지수} > {이름(캐리어)}:{변조지수} > ...]
+
+파형 합성 그래프 :=
+  [{이름(파형1)}:{진폭(0~1)} + {이름(파형2)}:{진폭(0~1)} + ...]
+
+<ADSR 문법>
+하나의 음에서 파형의 진폭(볼륨)이 어떻게 변화하는지 정의합니다.
+
+A = Attack : 음의 연주가 시작된 시점의 볼륨을 의미하며
+  지나야 최대 볼륨에 도달하는 시간(0~ms)
+D = Decay : Attack이 끝나고 Sustain 볼륨까지 떨어지는 데
+  걸리는 시간(0~ms)
+S = Sustain : Decay가 끝나고 음의 연주가 끝나기 전까지 유지되는
+  볼륨(0~100%)
+R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지는 데
+  걸리는 시간(0~ms)
+
+- ex) [a]100 [d]100 [s]30 [r]400 : 연주가 시작되면 0초만에
+  바로 최대 볼륨에 도달하고 0.1초 동안 30%로 떨어집니다.
+  연주가 끝난 후 0.4초 동안 0%로 떨어집니다.
+
+<기타 문법>
+- 스윕 : 피아노의 흰 건반을 손으로 쓸어 연주하는 기법을 표현합니다.
+  c4:e4 8이라면 c4에서 e4까지 8비트 동안 쓸어 연주하게 됩니다.
+
+- 지연 동시 연주 : 음을 c4 d4 e4 이렇게 누적한 후 시간을
+  4 이렇게 쓰면 동시에 4만큼 연주되지만,
+  시간을 4:0.1 이렇게 쓰면 c4 4 0.1 d4 3.9 0.1 e4 3.8 0과
+  동일하게 연주되지만 실제로 시간이 흐르지는 않습니다.
+
+  시간을 4:0.1:0.1 이렇게 쓰면 c4 3.8 0.1 d4 3.8 0.1
+  e4 3.8 0과 동일하게 연주되지만 역시 시간은 흐르지 않습니다.
+
+  a:b:c일 때는 음수도 가능하며, 대신 마이너스(-0.1) 문자가
+  아니라 언더바(_0.1)로 나타냅니다.
+
+  실제 공식은 아래와 같습니다.
+  i = 순서(0~)
+  L = 음 개수
+  음의 시작 시간 = time(i) = i * b
+  음의 길이 = span(i) = a - max(c, 0) * (L - 1) + i * (c - b)
+
+- 파형/연산은 sin, sqr, tri, saw 및 noise 파형과
+  low, high 패스 필터와 feedback이 있습니다.
+- 선언한 파형/연산 및 변조는 채널에 독립적입니다.
+- 이렇게 선언한 파형/연산은 기존의 파형 합성 문법인 '~'와 '+'
+  에 사용할 수 있습니다.
+  예) ~TestWave:sin:100 또는 +TestWave:0.5
+- 그리고 선언한 파형/연산들을 '[...]' 명령어로 연결해 변조시킬 수 있습니다.
+- 예를 들어 '&TestWave:sin:100 &TestNote:tri' 이후에
+  '[TestWave:200 > TestNote]' 하면 TestWave 파형으로
+  변조지수 200만큼 TestNote가 변조되게 됩니다.
+- '>'는 변조 그래프를 연결하라는 의미입니다.
+- '[A:100 > B:200 > C]'와 '[A:100 > B] [B:200 > C]'와 같습니다.
+- 변조지수, 변조에 쓰는 파형의 종류에 따라 소리가 매우 다양하게 변화됩니다.
+- '>' 외에 '+'도 있는데
+  '[[A:0.5 + B:0.5]:100 > C]'처럼 복잡하게 쓰입니다.
+  먼저 '[A:0.5 + B:0.5]'만 보자면 파형 A와 B를 각각 0.5 비율
+  (0~1)로 더한다는 의미입니다.
+  이렇게 더한 파형을 Z라고 하면 식은 '[Z:100 > C]'로 볼 수 있고,
+  이는 앞서 설명한 변조의 수행에 해당합니다.
+- '+'도 '[A:0.3 + B:0.3 + C:0.4]'처럼 여러 개를 더할 수 있습니다.
+- low, high는 입력 신호에서 특정 주파수 너머를 감쇄하는 역할을 합니다.
+  선언 방법은 '&이름:low:주파수', '&이름:high:주파수'이며
+  '[A:필터명 > 이름]'처럼 연결하여 사용할 수 있습니다.
+- feedback은 입력 신호를 그대로 출력으로 보내는 대신 일정 비율
+  자신의 입력으로 되돌려 재합성합니다.
+  선언 방법은 '&이름:feedback:비율(0~1)'이며
+  '[A > 이름]'처럼 연결하여 사용할 수 있습니다.
+
+<기타 문법>
+- 스윕 : 피아노의 흰 건반을 손으로 쓸어 연주하는 기법을 표현합니다.
+  c4:e4 8이라면 c4에서 e4까지 8비트 동안 쓸어 연주하게 됩니다.
+
+- 지연 동시 연주 : 음을 c4 d4 e4 이렇게 누적한 후 시간을
+  4 이렇게 쓰면 동시에 4만큼 연주되지만, 시간을 4:0.1 이렇게 쓰면
+  c4 4 0.1 d4 3.9 0.1 e4 3.8 0과 동일하게 연주되지만
+  실제로 시간이 흐르지는 않습니다.
+
+- TestWave 등의 사용자 정의 파형은 주파수를 생략할 수 있으며
+  생략 시 재생할 음의 주파수로 자동 지정됩니다.
 -->
 <html lang="ko">
   <head>
@@ -230,7 +497,7 @@
         this.name = name + ".";
       };
       // 저장소의 모든 값을 콘솔에 출력합니다.
-      Storage.protorype.printAll = function () {
+      Storage.prototype.printAll = function () {
         var buf = "";
         for (var i = 0; i < localStorage.length; i++) {
           var key = localStorage.key(i);
@@ -241,7 +508,7 @@
         console.log(buf);
       };
       // 저장소의 모든 값을 제거합니다.
-      Storage.protorype.clear = function () {
+      Storage.prototype.clear = function () {
         for (var key in window.localStorage) {
           if (key.indexOf(this.name) == 0) {
             localStorage.removeItem(key);
@@ -362,7 +629,7 @@
         this.cursor.y = win.innerHeight / 2;
         this.prevCursor.x = this.cursor.x;
         this.prevCursor.y = this.cursor.y;
-        win.onmosedown = this.whenDown.bind(this);
+        win.onmousedown = this.whenDown.bind(this);
         win.onmouseup = this.whenUp.bind(this);
         win.onmousemove = this.whenMove.bind(this);
         win.onmousewheel = this.whenWheel.bind(this);
@@ -377,7 +644,7 @@
       Mouse.prototype.update = function () {
         var newState = this.backBuffer;
         if (this.state == this.DOWN) {
-          this.state = this.Press;
+          this.state = this.PRESS;
         } else if (this.state == this.UP) {
           this.state = this.NONE;
         }
@@ -390,58 +657,62 @@
         if (this.wheelState == this.DOWN || this.wheelState == this.UP) {
           this.wheelState = this.NONE;
         }
-        this.wheelState = this.wheelBackbuffer;
+        this.wheelState = this.wheelBackBuffer;
         this.wheelBackBuffer = this.NONE;
         this.deltaCursor.x = this.cursor.x - this.prevCursor.x;
         this.deltaCursor.y = this.cursor.y - this.prevCursor.y;
         this.prevCursor.x = this.cursor.x;
         this.prevCursor.y = this.cursor.y;
-        // ##########################################################
-        Mouse.prototype.calculateCursorFrom = function (arg) {
-          this.cursor.x = arg.x - this.client.offsetLeft;
-          this.cursor.y = arg.y - this.client.offsetTop;
-        };
-        Mouse.prototype.whenDown = function (arg) {
-          this.backBuffer = this.DOWN;
-          this.calculateCursorFrom(arg);
-        };
-        Mouse.prototype.whenUp = function (arg) {
-          this.backBuffer = this.UP;
-          this.calculateCursorFrom(arg);
-        };
-        Mouse.prototype.whenMove = function (arg) {
-          this.calculateCursorFrom(arg);
-        };
-        Mouse.prototype.whenWheel = function (arg) {
-          this.wheelBackBuffer = arg.wheelDelta > 0 ? this.UP : this.DOWN;
-        };
-        // ##########################################################
-        // 마우스가 안눌린 상태에서 눌린 상태로 변환 시점인가?
-        // 상승 예지
-        Mouse.prototype.onDown = function () {
-          return this.state == this.DOWN;
-        };
-        // 마우스가 눌린 상태에서 안눌린 상태로 변환 시점인가?
-        // 하강 예지
-        Mouse.prototype.onUp = function () {
-          return this.state == this.UP;
-        };
-        // 마우스가 눌린 상태를 유지한 상태인가?
-        Mouse.prototype.onPressed = function () {
-          return this.state == this.PRESS;
-        };
-        // 마우스 휠이 위로 스크롤 된 상태로 변한 시점인가?
-        Mouse.prototype.onWheelUp = function () {
-          return this.wheelState == this.UP;
-        };
-        // 캔버스에서의 마우스 좌표를 반환.
-        Mouse.prototype.getCursor = function () {
-          return this.cursor;
-        };
-        // 캔버스에서의ㅡ 마우스 좌표 변위를 반환
-        Mouse.prototype.getDelta = function () {
-          return this.deltaCursor;
-        };
+      };
+      // ##########################################################
+      Mouse.prototype.calculateCursorFrom = function (arg) {
+        this.cursor.x = arg.x - this.client.offsetLeft;
+        this.cursor.y = arg.y - this.client.offsetTop;
+      };
+      Mouse.prototype.whenDown = function (arg) {
+        this.backBuffer = this.DOWN;
+        this.calculateCursorFrom(arg);
+      };
+      Mouse.prototype.whenUp = function (arg) {
+        this.backBuffer = this.UP;
+        this.calculateCursorFrom(arg);
+      };
+      Mouse.prototype.whenMove = function (arg) {
+        this.calculateCursorFrom(arg);
+      };
+      Mouse.prototype.whenWheel = function (arg) {
+        this.wheelBackBuffer = arg.wheelDelta > 0 ? this.UP : this.DOWN;
+      };
+      // ##########################################################
+      // 마우스가 안눌린 상태에서 눌린 상태로 변환 시점인가?
+      // 상승 예지
+      Mouse.prototype.onDown = function () {
+        return this.state == this.DOWN;
+      };
+      // 마우스가 눌린 상태에서 안눌린 상태로 변환 시점인가?
+      // 하강 예지
+      Mouse.prototype.onUp = function () {
+        return this.state == this.UP;
+      };
+      // 마우스가 눌린 상태를 유지한 상태인가?
+      Mouse.prototype.onPressed = function () {
+        return this.state == this.PRESS;
+      };
+      // 마우스 휠이 위로 스크롤 된 상태로 변한 시점인가?
+      Mouse.prototype.onWheelUp = function () {
+        return this.wheelState == this.UP;
+      };
+      // 마우스 휠이 아래로 스크롤 된 시점인가?
+      Mouse.prototype.onWheelDown = function () {
+        return this.wheelState == this.DOWN;
+      };
+      // 캔버스에서의 마우스 좌표를 반환.
+      Mouse.prototype.getCursor = function () {
+        return this.cursor;
+      };
+      // 캔버스에서의ㅡ 마우스 좌표 변위를 반환
+      Mouse.prototype.getDelta = function () {
+        return this.deltaCursor;
       };
       // ##########################################################
       const g_mouse = new Mouse();
@@ -726,7 +997,7 @@
         xEnd,
         yEnd,
       ) {
-        var gradient = this.context.creatLinearGradient(
+        var gradient = this.context.createLinearGradient(
           xBegin,
           yBegin,
           xEnd,
@@ -764,7 +1035,7 @@
       };
       // ##########################################################
       // 앞으로 그려질 그래픽에 행렬 변환을 수행할 준비를 합니다.
-      Graphics.prototype.beginTrasform = function () {
+      Graphics.prototype.beginTransform = function () {
         if (this.transformStack.length <= 0) {
           this.context.save();
         }
@@ -1534,7 +1805,7 @@
         var title = "";
         var doAppend = false;
         for (var i = 0; i < sheet.length; ++i) {
-          if (doAppent) {
+          if (doAppend) {
             if (sheet[i] == "\n") break;
             title += sheet[i];
           } else if (sheet[i] == "$") {
@@ -1652,6 +1923,12 @@
         }
       };
       // ##########################################################
+      function OpNodeWrapper(node) {
+        this.node = node || null;
+        this.parents = [];
+        this.indices = [];
+        this.prevOutput = 0;
+      }
       OpNodeWrapper.prototype.calculate = function (
         time,
         baseFreq,
@@ -3055,7 +3332,7 @@
       MusicPlayer.prototype.play = function (sheet) {
         var result = this.load(
           sheet
-            .replace(/(\+HIW<더하기W>)|W<플러스W>|W<PLUSW>|W[PLUSW])/g, "+")
+            .replace(/(\+HIW<더하기W>)|W<플러스W>|W<PLUSW>|W\[PLUSW\]/g, "+")
             .replace(/(%W<퍼센트W>|W[퍼센트W])/g, "%"),
         );
         this.playing = true;
@@ -3370,6 +3647,3355 @@
         g.endDrawText();
       };
     </script>
+    <script type="text/javascript">
+      function VolumeNote(time, volume) {
+        this.time = time;
+        this.volume = volume;
+      }
+      function VolumeSequencer() {
+        this.position = Vector.zero();
+        this.size = new Vector(400, 100);
+        this.widthPerBeat = 30;
+        this.beatRatio = 1;
+        this.volumes = [new VolumeNote(0, 1)];
+        this.selectedIndex = -1;
+        this.dotRadius = 5;
+        this.onDrag = false;
+      }
+      VolumeSequencer.prototype.clear = function () {
+        this.widthPerBeat = 30;
+        this.volumes = [new VolumeNote(0, 1)];
+        this.selectedIndex = -1;
+        this.onDrag = false;
+      };
+      VolumeSequencer.prototype.focusOut = function () {
+        this.selectedIndex = -1;
+        this.onDrag = false;
+      };
+      VolumeSequencer.prototype.update = function (scrollX) {
+        var cursor = g_mouse.getCursor();
+        // 첫번째 지점을 제외하고 선택된 지점 삭제
+        if (g_keyboard.onDown(Keys.Delete) && this.selectedIndex > 0) {
+          if (this.selectedIndex > 0) {
+            this.volumes.splice(this.selectedIndex, 1);
+          } else {
+            this.volumes[0].volume = 1;
+          }
+          this.selectedIndex = -1;
+        }
+        if (
+          g_mouse.onDown() &&
+          cursor.x > this.position.x - this.dotRadius &&
+          cursor.x < this.position.x + this.size.x + this.dotRadius &&
+          cursor.y > this.position.y - this.dotRadius &&
+          cursor.y < this.position.y + this.size.y
+        ) {
+          var rawTime =
+            (cursor.x - this.position.x) / this.widthPerBeat + scrollX;
+          var time =
+            Math.round(rawTime / (1.0 / this.beatRatio)) *
+            (1.0 / this.beatRatio);
+          var selectedIndex = -1;
+          for (var i = 0; i < this.volumes.length; ++i) {
+            var note = this.volumes[i];
+            if (Math.abs(time - note.time) < 0.000001) {
+              selectedIndex = i;
+              break;
+            }
+          }
+          if (selectedIndex < 0) {
+            if (this.selectedIndex < 0) {
+              // 지점 생성
+              var insertIndex = this.volumes.length;
+              for (var i = 0; i < this.volumes.length; ++i) {
+                var note = this.volumes[i];
+                // 이미 해당 시간에 있으면 생성하지 않음.
+                if (Math.abs(note.time - time) < 0.000001) {
+                  insertIndex = -1;
+                  break;
+                }
+                if (note.time > time) {
+                  insertIndex = i;
+                  break;
+                }
+              }
+              if (insertIndex >= 0) {
+                var note = new VolumeNote(time, 1);
+                this.volumes.splice(insertIndex, 0, note);
+                this.selectedIndex = insertIndex;
+                this.onDrag = true;
+              }
+            } else {
+              this.selectedIndex = -1;
+            }
+          } else {
+            this.selectedIndex = selectedIndex;
+            this.onDrag = true;
+          }
+        } else if (
+          this.onDrag &&
+          g_mouse.onPressed() &&
+          this.selectedIndex >= 0
+        ) {
+          // 지점 이동 및 볼륨 조절
+          var note = this.volumes[this.selectedIndex];
+          var rawTime =
+            (cursor.x - this.position.x) / this.widthPerBeat + scrollX;
+          var time =
+            Math.round(rawTime / (1.0 / this.beatRatio)) *
+            (1.0 / this.beatRatio);
+          var volume = round2(
+            (this.size.y + this.position.y - cursor.y) / this.size.y,
+            2,
+          );
+          if (volume < 0) {
+            volume = 0;
+          } else if (volume > 1) {
+            volume = 1;
+          }
+          note.volume = volume;
+          if (this.selectedIndex > 0) {
+            if (time > note.time) {
+              // 우측으로 이동시
+              if (this.selectedIndex + 1 < this.volumes.length) {
+                var right = this.volumes[this.selectedIndex + 1];
+                if (time > right.time - 0.000001) {
+                  time = Math.max(right.time - 1.0 / this.beatRatio, note.time);
+                }
+              }
+            } else if (time < note.time) {
+              // 좌측으로 이동시
+              var left = this.volumes[this.selectedIndex - 1];
+              if (time < left.time + 0.000001) {
+                time = Math.min(left.time + 1.0 / this.beatRatio, note.time);
+              }
+            }
+            note.time = time;
+          }
+        } else {
+          this.onDrag = false;
+        }
+      };
+      VolumeSequencer.prototype.render = function (g, scrollX) {
+        // 배경
+        g.beginFillRect("rgb(240, 240, 240)");
+        g.fillRect(this.position.x, this.position.y, this.size.x, this.size.y);
+        g.endFillRect();
+        // 구분선
+        this.renderSplitter(g, scrollX);
+        // 그래프
+        this.renderGraph(
+          g,
+          this.position.x,
+          this.position.y,
+          this.size.x,
+          this.size.y,
+          this.widthPerBeat,
+          this.dotRadius,
+          scrollX,
+        );
+        // 테두리
+        g.beginDrawRect("black", 1);
+        g.drawRect(this.position.x, this.position.y, this.size.x, this.size.y);
+        g.endDrawRect();
+        // 커서 볼륨
+        if (this.onDrag && this.selectedIndex >= 0) {
+          var cursor = g_mouse.getCursor();
+          var xPos = cursor.x + 6;
+          var yPos = cursor.y;
+          if (cursor.y < this.position.y + this.size.y / 2) {
+            xPos += 10;
+            yPos += 14;
+          }
+          var note = this.volumes[this.selectedIndex];
+          g.beginDrawText("black", "14px");
+          g.drawText("" + note.volume, xPos, yPos);
+          g.endDrawText();
+        }
+      };
+      VolumeSequencer.prototype.renderSplitter = function (g, scrollX) {
+        var invRatio = 1 / this.beatRatio;
+        var xPos = this.position.x;
+        xPos += this.widthPerBeat * (invRatio - (scrollX % invRatio));
+        g.beginDrawLine("rgb(210, 210, 210)", 1);
+        while (xPos < this.position.x + this.size.x) {
+          g.drawLine(
+            xPos,
+            this.position.y,
+            xPos,
+            this.position.y + this.size.y,
+          );
+          xPos += this.widthPerBeat / this.beatRatio;
+        }
+        g.endDrawLine();
+      };
+      VolumeSequencer.prototype.renderGraph = function (
+        g,
+        x,
+        y,
+        width,
+        height,
+        widthPerBeat,
+        dotRadius,
+        scrollX,
+      ) {
+        var prevNote = this.volumes[0];
+        var prevX = x + (prevNote.time - scrollX) * widthPerBeat;
+        for (var i = 1; i < this.volumes.length; ++i) {
+          var note = this.volumes[i];
+          var xPos = x + (note.time - scrollX) * widthPerBeat;
+          if (xPos < x) {
+            prevNote = note;
+            prevX = xPos;
+            continue;
+          }
+          if (prevX > x + width) {
+            break;
+          }
+          var yPos = y + height - prevNote.volume * height;
+          var boxWidth = xPos - prevX;
+          var realX = prevX;
+          if (realX < x) {
+            boxWidth = xPos - x;
+            realX = x;
+          }
+          g.beginFillRect("rgb(202, 236, 244)");
+          g.fillRect(
+            realX - 0.5,
+            yPos,
+            boxWidth + 0.5,
+            prevNote.volume * height,
+          );
+          g.endFillRect();
+          if (prevX > x - 0.000001) {
+            g.beginFillCircle(i - 1 == this.selectedIndex ? "blue" : "gray");
+            g.fillCircle(
+              prevX,
+              y + height - prevNote.volume * height,
+              dotRadius,
+            );
+            g.endFillCircle();
+          }
+          prevNote = note;
+          prevX = xPos;
+        }
+        if (prevX < x + width) {
+          var lastNote = this.volumes[this.volumes.length - 1];
+          var boxWidth = x + width - prevX;
+          var realX = prevX;
+          if (realX < x) {
+            boxWidth = width;
+            realX = x;
+          }
+          g.beginFillRect("rgb(202, 236, 244)");
+          g.fillRect(
+            realX - 0.5,
+            y + height - lastNote.volume * height,
+            boxWidth + 0.5,
+            lastNote.volume * height,
+          );
+          g.endFillRect();
+          if (prevX > x - 0.000001) {
+            g.beginFillCircle(
+              this.volumes.length - 1 == this.selectedIndex ? "blue" : "gray",
+            );
+            g.fillCircle(
+              prevX,
+              y + height - lastNote.volume * height,
+              dotRadius,
+            );
+            g.endFillCircle();
+          }
+        }
+      };
+      VolumeSequencer.prototype.appendDot = function (time, volume) {
+        if (
+          this.volumes.length > 0 &&
+          Math.abs(this.volumes[this.volumes.length - 1].volume - volume) <
+            0.000001
+        ) {
+          return false;
+        }
+        if (
+          this.volumes.length > 0 &&
+          Math.abs(this.volumes[this.volumes.length - 1].time - time) < 0.000001
+        ) {
+          this.volumes[this.volumes.length - 1].volume = volume;
+        } else {
+          this.volumes.push(new VolumeNote(time, volume));
+        }
+        return true;
+      };
+    </script>
+    <script type="text/javascript">
+      function Note() {
+        this.time = 0;
+        this.beat = 1;
+        this.scale = 0;
+      }
+      Note.prototype.clone = function () {
+        var note = new Note();
+        note.time = this.time;
+        note.beat = this.beat;
+        note.scale = this.scale;
+        return note;
+      };
+      function Sequencer() {
+        this.tabNumber = 0;
+        this.prevSheet = "";
+        this.prevMusicData = null;
+        this.enabled = true;
+        this.prevEnabled = true;
+        this.isHalf = [
+          false,
+          true,
+          false,
+          true,
+          false,
+          false,
+          true,
+          false,
+          true,
+          false,
+          true,
+          false,
+        ];
+        this.indexToName = [
+          "c",
+          "c#",
+          "d",
+          "d#",
+          "e",
+          "f",
+          "f#",
+          "g",
+          "g#",
+          "a",
+          "a#",
+          "b",
+        ];
+        this.position = Vector.zero();
+        this.size = new Vector(500, 200);
+        this.scroll = new Vector(0, 3 * 12);
+        this.pianoSize = 150;
+        this.minOctave = 1;
+        this.maxOctave = 8;
+        this.noteHeight = 22;
+        this.noteWidthPerBeat = 30;
+        this.beatPerPhase = 16;
+        this.lines = new Array((this.maxOctave - this.minOctave + 1) * 12);
+        this.selectedNotes = [];
+        this.selectedCenterNote = null;
+        this.cursorPos = Vector.zero();
+        this.selectionBegin = null;
+        this.clipNotes = [];
+        this.focusIndex = -1;
+        this.beatRatio = 1;
+        this.timePerBeat = 100;
+        this.musicCursor = 0;
+        this.option = "";
+        this.cursorDelta = Vector.zero();
+        this.prevBeat = 1;
+        this.volumeSeq = new VolumeSequencer();
+        this.showVolume = false;
+        this.onSetCursor = function (sender, targetBeat) {};
+      }
+      Sequencer.prototype.init = function () {
+        for (var i = 0; i < this.lines.length; ++i) {
+          this.lines[i] = [];
+        }
+        this.volumeSeq.size.set(this.size.x - this.pianoSize, 150);
+        this.volumeSeq.position.set(
+          this.position.x + this.pianoSize,
+          this.position.y + this.size.y - this.volumeSeq.size.y,
+        );
+      };
+      Sequencer.prototype.update = function () {
+        var cursor = g_mouse.getCursor();
+        var cursorDelta = g_mouse.getDelta();
+        // 볼륨 그래프 표시 여부
+        if (
+          g_keyboard.onDown(Keys.V) &&
+          g_keyboard.onPressed(Keys.Ctrl) == false
+        ) {
+          this.showVolume = !this.showVolume;
+          if (this.showVolume == false) {
+            this.volumeSeq.focusOut();
+          }
+        }
+        // 스크롤 크기 변경
+        var scrollSize = 1;
+        if (g_keyboard.onPressed(Keys.Shift)) {
+          scrollSize = 16;
+        }
+        // 라인 포커스 리셋
+        this.focusIndex = -1;
+        // 노트 삭제
+        if (
+          g_keyboard.onDown(Keys.Delete) &&
+          this.volumeSeq.selectedIndex < 0
+        ) {
+          for (var i = 0; i < this.selectedNotes.length; ++i) {
+            var note = this.selectedNotes[i];
+            var selectedIndex = this.indexOf(note);
+            this.lines[note.scale].splice(selectedIndex, 1);
+          }
+          this.deselectNotes();
+        }
+        // 볼륨 그래프
+        if (
+          this.showVolume &&
+          g_keyboard.onPressed(Keys.Alt) == false &&
+          g_keyboard.onPressed(Keys.Shift) == false
+        ) {
+          this.volumeSeq.update(this.scroll.x);
+        }
+        // 스크롤 초기화
+        if (g_keyboard.onDown(Keys.Backspace) || g_keyboard.onDown(Keys.Home)) {
+          this.scroll.x = 0;
+        }
+        // 단위 비율 변경
+        if (
+          g_keyboard.onPressed(Keys.Shift) &&
+          !g_keyboard.onPressed(Keys.Ctrl)
+        ) {
+          for (var i = 1; i <= 9; ++i) {
+            if (
+              g_keyboard.onDown(
+                Keys[String.fromCharCode("0".charCodeAt(0) + i)],
+              )
+            ) {
+              this.beatRatio = i;
+              this.prevBeat = 1.0 / i;
+              this.volumeSeq.beatRatio = i;
+              break;
+            }
+          }
+        }
+        // 커서 조작
+        if (
+          g_mouse.onDown(Keys.Down) &&
+          cursor.x > this.position.x + this.pianoSize &&
+          cursor.x < this.position.x + this.size.x &&
+          cursor.y > this.position.y - 24 &&
+          cursor.y < this.position.y + this.size.y
+        ) {
+          var realX =
+            cursor.x -
+            this.position.x -
+            this.pianoSize +
+            this.scroll.x * this.noteWidthPerBeat;
+          var cursorBeat = realX / this.noteWidthPerBeat;
+          this.onSetCursor(this, cursorBeat);
+        }
+        if (this.selectedNotes.length > 0) {
+          if (g_keyboard.onDown(Keys.Down) || g_keyboard.onDown(Keys.Up)) {
+            // 방향키로 노트 키 이동
+            var delta = 1;
+            if (g_keyboard.onPressed(Keys.Shift)) {
+              delta = 12; // 옥타브 단위
+            }
+            var centerNote = this.selectedNotes[0];
+            var targetIndex =
+              centerNote.scale +
+              (g_keyboard.onDown(Keys.Down) ? -delta : delta);
+            var targetTime;
+            if (
+              this.checkMove(
+                this.selectedNotes,
+                centerNote,
+                targetIndex,
+                centerNote.time,
+              )
+            ) {
+              this.moveNotes(
+                this.selectedNotes,
+                centerNote,
+                targetIndex,
+                centerNote.time,
+              );
+            }
+          }
+          if (g_keyboard.onDown(Keys.Left) || g_keyboard.onDown(Keys.Right)) {
+            // 방향키로 노트 시간 이동
+            var delta = 1 / this.beatRatio;
+            if (g_keyboard.onPressed(Keys.Shift)) {
+              delta = this.beatPerPhase;
+            }
+            var centerNote = this.selectedNotes[0];
+            var targetTime =
+              centerNote.time + (g_keyboard.onDown(Keys.Left) ? -delta : delta);
+            if (
+              this.checkMove(
+                this.selectedNotes,
+                centerNote,
+                centerNote.scale,
+                targetTime,
+              )
+            ) {
+              this.moveNotes(
+                this.selectedNotes,
+                centerNote,
+                centerNote.scale,
+                targetTime,
+              );
+            }
+          }
+          if (g_keyboard.onPressed(Keys.Ctrl)) {
+            if (g_keyboard.onDown(Keys.C) || g_keyboard.onDown(Keys.X)) {
+              // 노트 복사
+              this.clipNotes = [];
+              if (this.selectedNotes.length > 0) {
+                var minTime = this.selectedNotes[0].time;
+                var minIdx = 0;
+                for (var i = 1; i < this.selectedNotes.length; ++i) {
+                  var note = this.selectedNotes[i];
+                  if (note.time < minTime) {
+                    minTime = note.time;
+                    minIdx = i;
+                  }
+                }
+                this.clipNotes.push(this.selectedNotes[minIdx].clone());
+                for (var i = 0; i < this.selectedNotes.length; ++i) {
+                  if (i != minIdx) {
+                    this.clipNotes.push(this.selectedNotes[i].clone());
+                  }
+                }
+              }
+              if (g_keyboard.onDown(Keys.X)) {
+                // 잘라내기
+                for (var i = 0; i < this.selectedNotes.length; ++i) {
+                  var note = this.selectedNotes[i];
+                  var selectedIndex = this.indexOf(note);
+                  this.lines[note.scale].splice(selectedIndex, 1);
+                }
+                this.deselectNotes();
+              }
+            }
+          }
+        } else {
+          this.selectionBegin = null;
+        }
+        if (cursor.x < this.position.x + this.pianoSize) {
+          if (
+            cursor.y > this.position.y &&
+            cursor.y < this.position.y + this.size.y
+          ) {
+            if (g_keyboard.onPressed(Keys.Alt)) {
+              // 세로 크기 조절
+              if (g_mouse.onWheelDown()) {
+                this.setVerticalSize(this.noteHeight - 1);
+              } else if (g_mouse.onWheelUp()) {
+                this.setVerticalSize(this.noteHeight + 1);
+              }
+            } else {
+              // 세로 스크롤
+              if (g_mouse.onWheelDown()) {
+                this.setVerticalScroll(this.scroll.y + scrollSize);
+              } else if (g_mouse.onWheelUp()) {
+                this.setVerticalScroll(this.scroll.y - scrollSize);
+              }
+            }
+          }
+        } else {
+          if (
+            cursor.y > this.position.y - 24 &&
+            cursor.y < this.position.y + this.size.y
+          ) {
+            if (g_keyboard.onPressed(Keys.Alt)) {
+              // 가로 크기 조절
+              if (g_mouse.onWheelDown()) {
+                this.setHorizontalSize(this.noteWidthPerBeat - 2);
+              } else if (g_mouse.onWheelUp()) {
+                this.setHorizontalSize(this.noteWidthPerBeat + 2);
+              }
+            } else {
+              // 가로 스크롤
+              if (g_mouse.onWheelDown()) {
+                this.setHorizontalScroll(this.scroll.x + scrollSize);
+              } else if (g_mouse.onWheelUp()) {
+                this.setHorizontalScroll(this.scroll.x - scrollSize);
+              }
+            }
+          }
+        }
+        // 드래그로 스크롤
+        if (g_keyboard.onPressed(Keys.Alt) && g_mouse.onPressed()) {
+          this.cursorDelta.x += cursorDelta.x * scrollSize;
+          this.cursorDelta.y += cursorDelta.y * scrollSize;
+          var scrollX = Math.round(this.cursorDelta.x / this.noteWidthPerBeat);
+          var scrollY = Math.round(this.cursorDelta.y / this.noteHeight);
+          if (Math.abs(scrollX) > 0) {
+            this.setHorizontalScroll(this.scroll.x - scrollX);
+            this.cursorDelta.x = 0;
+          }
+          if (Math.abs(scrollY) > 0) {
+            this.setVerticalScroll(this.scroll.y - scrollY);
+            this.cursorDelta.y = 0;
+          }
+        } else {
+          this.cursorDelta.set(0, 0);
+        }
+        // 노트 생성 및 조작
+        var endY = this.position.y + this.size.y;
+        if (this.showVolume) {
+          endY -= this.volumeSeq.size.y;
+        }
+        if (
+          cursor.y > this.position.y &&
+          cursor.y < endY &&
+          cursor.x < this.position.x + this.size.x &&
+          g_keyboard.onPressed(Keys.Alt) == false &&
+          this.volumeSeq.onDrag == false
+        ) {
+          var index =
+            this.lines.length -
+            1 -
+            this.scroll.y -
+            Math.floor((cursor.y - this.position.y) / this.noteHeight);
+          var rawTime =
+            (cursor.x - this.position.x - this.pianoSize) /
+              this.noteWidthPerBeat +
+            this.scroll.x;
+          var time =
+            Math.floor(rawTime / (1.0 / this.beatRatio)) *
+            (1.0 / this.beatRatio);
+          this.cursorPos.set(rawTime, index);
+          if (index >= 0 && index < this.lines.length) {
+            var notes = this.lines[index];
+            if (g_keyboard.onPressed(Keys.Ctrl)) {
+              if (g_keyboard.onDown(Keys.V) && this.clipNotes.length > 0) {
+                // 노트 붙여넣기
+                if (
+                  this.checkMove(this.clipNotes, this.clipNotes[0], index, time)
+                ) {
+                  this.deselectNotes();
+                  var targetNotes = [];
+                  for (var i = 0; i < this.clipNotes.length; ++i) {
+                    targetNotes.push(this.clipNotes[i].clone());
+                    this.selectedNotes.push(targetNotes[i]);
+                  }
+                  this.moveNotes(targetNotes, targetNotes[0], index, time);
+                }
+              }
+            } else {
+              // 라인 포커스 설정
+              this.focusIndex = index;
+            }
+            if (g_mouse.onDown() && g_keyboard.onPressed(Keys.Shift) == false) {
+              if (g_keyboard.onPressed(Keys.Ctrl)) {
+                // 박스 선택 시작
+                this.deselectNotes();
+                this.selectionBegin = new Vector(rawTime, index);
+              } else {
+                var selectedNote = null;
+                // 선택된 노트 찾기
+                for (var i = 0; i < notes.length; ++i) {
+                  var note = notes[i];
+                  if (rawTime >= note.time && rawTime < note.time + note.beat) {
+                    selectedNote = note;
+                    break;
+                  }
+                }
+                if (selectedNote === null) {
+                  this.selectedCenterNote = null;
+                  if (this.selectedNotes.length <= 1) {
+                    // 노트 생성
+                    var goodToNew = false;
+                    var newNote = new Note();
+                    newNote.time = time;
+                    newNote.scale = index;
+                    newNote.beat = this.prevBeat;
+                    if (this.checkMove([newNote], newNote, index, time)) {
+                      goodToNew = true;
+                    } else {
+                      newNote.beat = 1.0 / this.beatRatio;
+                    }
+                    if (
+                      goodToNew ||
+                      this.checkMove([newNote], newNote, index, time)
+                    ) {
+                      var insertIndex = this.findIndex(index, time);
+                      notes.splice(insertIndex, 0, newNote);
+                      this.prevBeat = newNote.beat;
+                      this.selectedNotes = [newNote];
+                      this.selectedCenterNote = newNote;
+                    } else {
+                      this.deselectNotes();
+                    }
+                  }
+                } else if (this.isSelectedNote(selectedNote) == false) {
+                  this.selectedNotes = [selectedNote];
+                  this.selectedCenterNote = selectedNote;
+                } else {
+                  this.selectedCenterNote = selectedNote;
+                }
+                this.selectionBegin = null;
+              }
+            } else if (
+              g_mouse.onUp() &&
+              g_keyboard.onPressed(Keys.Ctrl) &&
+              this.selectionBegin !== null
+            ) {
+              // 노트 선택
+              this.selectedNotes = this.getNotesInBox(
+                this.selectionBegin.x,
+                this.selectionBegin.y,
+                rawTime,
+                index,
+              );
+              this.selectionBegin = null;
+            } else if (g_mouse.onDown() || g_mouse.onPressed()) {
+              if (
+                g_keyboard.onPressed(Keys.Shift) &&
+                this.selectedNotes.length == 1
+              ) {
+                // 노트 길이 조절
+                var targetNote = this.selectedNotes[0];
+                var beat = time - targetNote.time + 1.0 / this.beatRatio;
+                if (beat < 1.0 / this.beatRatio) {
+                  beat = 1.0 / this.beatRatio;
+                }
+                var selectedIndex = this.indexOf(targetNote);
+                // 노트 뒤의 노트와 충돌하지 않으면
+                if (
+                  selectedIndex >= this.lines[targetNote.scale].length - 1 ||
+                  targetNote.time + beat <=
+                    this.lines[targetNote.scale][selectedIndex + 1].time
+                ) {
+                  targetNote.beat = beat;
+                  this.prevBeat = beat;
+                }
+              } else if (
+                (Math.abs(cursorDelta.x) > 0 || Math.abs(cursorDelta.y) > 0) &&
+                this.selectedNotes.length > 0 &&
+                this.selectedCenterNote !== null &&
+                this.checkMove(
+                  this.selectedNotes,
+                  this.selectedCenterNote,
+                  index,
+                  time,
+                )
+              ) {
+                // 노트 이동
+                this.moveNotes(
+                  this.selectedNotes,
+                  this.selectedCenterNote,
+                  index,
+                  time,
+                );
+              }
+            }
+          }
+        }
+      };
+      Sequencer.prototype.render = function (g) {
+        var cursor = g_mouse.getCursor();
+        // 마디 번호 배경
+        g.beginFillRect("rgb(240, 240, 240)");
+        g.fillRect(
+          this.position.x + this.pianoSize,
+          this.position.y - 24,
+          this.size.x - this.pianoSize,
+          24,
+        );
+        g.endFillRect();
+        // 마디 번호
+        this.renderPhaseNumber(
+          g,
+          this.position.x,
+          this.position.y,
+          this.size.x,
+          this.noteWidthPerBeat,
+          this.pianoSize,
+          this.scroll.x,
+        );
+        // 목표 커서
+        if (
+          cursor.x > this.position.x + this.pianoSize &&
+          cursor.x < this.position.x + this.size.x &&
+          cursor.y > this.position.y - 24 &&
+          cursor.y < this.position.y
+        ) {
+          g.beginDrawLine("red", 1);
+          g.drawLine(cursor.x, this.position.y - 24, cursor.x, this.position.y);
+          g.endDrawLine();
+        }
+        // 마디
+        this.renderPhaseSplitter(
+          g,
+          this.position.x,
+          this.position.y,
+          this.size.x,
+          this.size.y,
+          this.noteWidthPerBeat,
+          this.pianoSize,
+          this.scroll.x,
+          this.beatPerPhase * this.beatRatio,
+          "rgb(230, 230, 230)",
+          1,
+        );
+        this.renderPhaseSplitter(
+          g,
+          this.position.x,
+          this.position.y,
+          this.size.x,
+          this.size.y,
+          this.noteWidthPerBeat,
+          this.pianoSize,
+          this.scroll.x,
+          this.beatPerPhase / 4,
+          "rgb(200, 200, 200)",
+          1,
+        );
+        this.renderPhaseSplitter(
+          g,
+          this.position.x,
+          this.position.y,
+          this.size.x,
+          this.size.y,
+          this.noteWidthPerBeat,
+          this.pianoSize,
+          this.scroll.x,
+          1,
+          "rgb(100, 100, 100)",
+          2,
+        );
+        // 노트
+        this.renderNotes(
+          g,
+          this.position.x,
+          this.position.y,
+          this.size.x,
+          this.size.y,
+          this.noteWidthPerBeat,
+          this.noteHeight,
+          this.pianoSize,
+          this.scroll.x,
+          this.scroll.y,
+        );
+        // 선택 박스
+        if (this.selectionBegin !== null) {
+          var boxX = Math.min(this.selectionBegin.x, this.cursorPos.x);
+          var boxY = Math.max(this.selectionBegin.y, this.cursorPos.y);
+          var boxWidth =
+            Math.abs(this.selectionBegin.x - this.cursorPos.x) *
+            this.noteWidthPerBeat;
+          var boxHeight =
+            Math.abs(this.selectionBegin.y - this.cursorPos.y) *
+              this.noteHeight +
+            this.noteHeight;
+          var xPos =
+            this.position.x +
+            this.pianoSize +
+            boxX * this.noteWidthPerBeat -
+            this.scroll.x * this.noteWidthPerBeat;
+          if (xPos < this.position.x + this.pianoSize) {
+            boxWidth -= this.position.x + this.pianoSize - xPos;
+            xPos = this.position.x + this.pianoSize;
+          }
+          if (xPos + boxWidth > this.position.x + this.size.x) {
+            boxWidth = this.position.x + this.size.x - xPos;
+          }
+          var yPos =
+            this.position.y + (this.lines.length - boxY - 1) * this.noteHeight;
+          yPos -= this.scroll.y * this.noteHeight;
+          if (yPos < this.position.y) {
+            boxHeight -= this.position.y - yPos;
+            yPos = this.position.y;
+          }
+          if (yPos + boxHeight > this.position.y + this.size.y) {
+            boxHeight = this.position.y + this.size.y - yPos;
+          }
+          if (boxWidth > 0 && boxHeight > 0) {
+            g.setOpacity(0.2);
+            g.beginFillRect("rgb(30, 30, 30)");
+            g.fillRect(xPos, yPos, boxWidth, boxHeight);
+            g.endFillRect();
+            g.setOpacity(1);
+          }
+        }
+        // 구분선
+        g.beginDrawLine("black", 3);
+        g.drawLine(
+          this.position.x + this.pianoSize,
+          this.position.y - 24,
+          this.position.x + this.pianoSize,
+          this.position.y + this.size.y,
+        );
+        g.endDrawLine();
+        // 가이드
+        var yPos = this.position.y;
+        g.beginFillRect("white");
+        g.fillRect(
+          this.position.x,
+          this.position.y - 24,
+          this.pianoSize,
+          this.size.y + 48,
+        );
+        g.endFillRect();
+        for (
+          var scale = this.maxOctave * 12 - this.scroll.y - 1;
+          scale >= this.minOctave * 12 - 12;
+          --scale
+        ) {
+          var index = scale % 12;
+          var octave = Math.floor(scale / 12) + 1;
+          // 건반
+          if (this.isHalf[index]) {
+            g.beginFillRect("black");
+            g.fillRect(
+              this.position.x,
+              yPos,
+              (this.pianoSize / 3) * 2,
+              this.noteHeight,
+            );
+            g.endFillRect();
+          }
+          // 가로 선
+          g.beginDrawLine(
+            index == 11 ? "rgb(10, 10, 10)" : "gray",
+            index == 11 ? 2 : 1,
+          );
+          g.drawLine(
+            this.position.x,
+            yPos,
+            this.position.x + this.size.x,
+            yPos,
+          );
+          g.endDrawLine();
+          // 이름
+          if (this.noteHeight >= 18) {
+            g.beginDrawText("black", Math.round(this.noteHeight - 8) + "px");
+            g.drawText(
+              this.indexToName[index] + octave,
+              this.position.x + (this.pianoSize / 3) * 2 + 12,
+              yPos + 16 - (22 - this.noteHeight),
+            );
+            g.endDrawText();
+          }
+          yPos += this.noteHeight;
+        }
+        g.beginDrawLine("rgb(10, 10, 10)", 1);
+        g.drawLine(this.position.x, yPos, this.position.x + this.size.x, yPos);
+        g.endDrawLine();
+        // 시퀀서 정보
+        g.beginDrawText("black", "14px");
+        g.drawText(
+          "Seq" + this.tabNumber + " (" + this.getNoteCount() + "개)",
+          this.position.x + 2,
+          this.position.y - 8,
+        );
+        g.endDrawText();
+        // 볼륨 그래프
+        if (this.showVolume) {
+          this.volumeSeq.render(g, this.scroll.x);
+        }
+        // 테두리 컬러
+        g.beginFillRect("white");
+        g.fillRect(0, this.position.y, this.position.x, this.size.y);
+        g.fillRect(
+          this.position.x,
+          this.position.y + this.size.y,
+          this.size.x,
+          this.noteHeight,
+        );
+        g.fillRect(
+          this.position.x + this.size.x,
+          this.position.y,
+          512,
+          this.size.y,
+        );
+        g.endFillRect();
+        // 커서
+        var musicCursorX =
+          this.position.x +
+          this.pianoSize +
+          this.musicCursor * this.noteWidthPerBeat;
+        musicCursorX -= this.scroll.x * this.noteWidthPerBeat;
+        if (
+          musicCursorX > this.position.x + this.pianoSize &&
+          musicCursorX < this.position.x + this.size.x
+        ) {
+          g.beginDrawLine("red", 1);
+          g.drawLine(
+            musicCursorX,
+            this.position.y - 24,
+            musicCursorX,
+            this.position.y + this.size.y,
+          );
+          g.endDrawLine();
+        }
+      };
+      Sequencer.prototype.renderPhaseNumber = function (
+        g,
+        x,
+        y,
+        leftSideWidth,
+        width,
+        noteWidth,
+        scrollX,
+      ) {
+        var xPos = x + leftSideWidth;
+        xPos += noteWidth * (this.beatPerPhase - (scrollX % this.beatPerPhase));
+        var num = 1 + Math.floor(scrollX / this.beatPerPhase);
+        g.beginDrawText("black", "14px");
+        while (xPos < x + width) {
+          g.drawTextCenter("" + num, xPos, y - 8);
+          xPos += noteWidth * this.beatPerPhase;
+          num += 1;
+        }
+        g.endDrawText();
+      };
+      Sequencer.prototype.renderPhaseSplitter = function (
+        g,
+        x,
+        y,
+        width,
+        height,
+        noteWidth,
+        leftSideWidth,
+        scrollX,
+        ratio,
+        color,
+        lineWidth,
+      ) {
+        var xPos = x + leftSideWidth;
+        xPos +=
+          noteWidth *
+          (this.beatPerPhase / ratio - (scrollX % (this.beatPerPhase / ratio)));
+        g.beginDrawLine(color, lineWidth);
+        while (xPos < x + width) {
+          g.drawLine(xPos, y, xPos, y + height);
+          xPos += (noteWidth * this.beatPerPhase) / ratio;
+        }
+        g.endDrawLine();
+      };
+      Sequencer.prototype.renderNotes = function (
+        g,
+        x,
+        y,
+        width,
+        height,
+        noteWidth,
+        noteHeight,
+        leftSideWidth,
+        scrollX,
+        scrollY,
+      ) {
+        for (var i = 0; i < this.lines.length; ++i) {
+          var notes = this.lines[i];
+          var yPos = y + (this.lines.length - i - 1) * noteHeight;
+          yPos -= scrollY * noteHeight;
+          if (yPos > y + height) {
+            continue;
+          } else if (yPos < y) {
+            break;
+          }
+          if (i == this.focusIndex) {
+            g.setOpacity(0.2);
+            g.beginFillRect("gray");
+            g.fillRect(
+              x + leftSideWidth,
+              yPos,
+              width - leftSideWidth,
+              noteHeight,
+            );
+            g.endFillRect();
+            g.setOpacity(1);
+          }
+          for (var j = 0; j < notes.length; ++j) {
+            var note = notes[j];
+            var xPos = x + leftSideWidth + note.time * noteWidth;
+            xPos -= scrollX * noteWidth;
+            var endX = xPos + note.beat * noteWidth;
+            if (xPos < x + leftSideWidth) {
+              xPos = x + leftSideWidth;
+            } else if (xPos > x + width) {
+              break;
+            }
+            if (endX < x + leftSideWidth) {
+              continue;
+            }
+            g.beginFillRect(
+              this.isSelectedNote(note) ? "rgb(1, 101, 6)" : "rgb(48, 174, 0)",
+            );
+            g.fillRect(xPos, yPos, endX - xPos, noteHeight);
+            g.endFillRect();
+            g.beginFillRect("gray");
+            g.fillRect(xPos, yPos, 1, noteHeight);
+            g.endFillRect();
+          }
+        }
+      };
+      Sequencer.prototype.toggle = function () {
+        this.enabled = !this.enabled;
+      };
+      Sequencer.prototype.indexOf = function (note) {
+        if (note.scale < 0 || note.scale >= this.lines.length) {
+          return -1;
+        }
+        var notes = this.lines[note.scale];
+        for (var i = 0; i < notes.length; ++i) {
+          if (notes[i] == note) {
+            return i;
+          }
+        }
+        return -1;
+      };
+      Sequencer.prototype.findIndex = function (scale, time) {
+        if (scale < 0 || scale >= this.lines.length) {
+          return -1;
+        }
+        var notes = this.lines[scale];
+        for (var i = 0; i < notes.length; ++i) {
+          if (notes[i].time > time) {
+            return i;
+          }
+        }
+        return notes.length;
+      };
+      Sequencer.prototype.checkMove = function (
+        targetNotes,
+        centerNote,
+        scale,
+        time,
+      ) {
+        var deltaScale = scale - centerNote.scale;
+        var deltaTime = time - centerNote.time;
+        for (var t = 0; t < targetNotes.length; ++t) {
+          var target = targetNotes[t];
+          var targetScale = target.scale + deltaScale;
+          var targetTime = target.time + deltaTime;
+          if (
+            targetScale < 0 ||
+            targetScale >= this.lines.length ||
+            targetTime < 0
+          ) {
+            return false;
+          }
+          var notes = this.lines[targetScale];
+          for (var i = 0; i < notes.length; ++i) {
+            var note = notes[i];
+            var skip = false;
+            for (var j = 0; j < targetNotes.length; ++j) {
+              if (note == targetNotes[j]) {
+                skip = true;
+                break;
+              }
+            }
+            if (skip) {
+              continue;
+            }
+            if (Math.abs(targetTime - note.time) < 0.000001) {
+              return false;
+            }
+            var endTime1 = targetTime + target.beat;
+            var endTime2 = note.time + note.beat;
+            if (
+              !(
+                endTime1 < note.time + 0.000001 ||
+                Math.abs(endTime1 - note.time) < 0.000001 ||
+                endTime2 < targetTime + 0.000001 ||
+                Math.abs(endTime2 - targetTime) < 0.000001
+              )
+            ) {
+              return false;
+            }
+          }
+        }
+        return true;
+      };
+      Sequencer.prototype.isSelectedNote = function (note) {
+        for (var i = 0; i < this.selectedNotes.length; ++i) {
+          if (this.selectedNotes[i] == note) {
+            return true;
+          }
+        }
+        return false;
+      };
+      Sequencer.prototype.deselectNotes = function () {
+        this.selectedNotes = [];
+        this.selectedCenterNote = null;
+        this.selectionBegin = null;
+      };
+      Sequencer.prototype.getNotesInBox = function (
+        beginTime,
+        beginScale,
+        endTime,
+        endScale,
+      ) {
+        var result = [];
+        if (beginTime > endTime) {
+          var temp = beginTime;
+          beginTime = endTime;
+          endTime = temp;
+        }
+        if (beginScale > endScale) {
+          var temp = beginScale;
+          beginScale = endScale;
+          endScale = temp;
+        }
+        for (var index = 0; index < this.lines.length; ++index) {
+          var notes = this.lines[index];
+          for (var i = 0; i < notes.length; ++i) {
+            var note = notes[i];
+            var endNoteTime = note.time + note.beat;
+            if (
+              !(
+                endTime < note.time ||
+                endNoteTime < beginTime ||
+                endScale < note.scale ||
+                note.scale < beginScale
+              )
+            ) {
+              result.push(note);
+            }
+          }
+        }
+        return result;
+      };
+      Sequencer.prototype.moveNotes = function (
+        notes,
+        centerNote,
+        targetScale,
+        targetTime,
+      ) {
+        var deltaScale = targetScale - centerNote.scale;
+        var deltaTime = targetTime - centerNote.time;
+        for (var i = 0; i < notes.length; ++i) {
+          var note = notes[i];
+          var scale = note.scale + deltaScale;
+          var time = note.time + deltaTime;
+          if (scale < 0 || scale >= this.lines.length || time < 0) {
+            continue;
+          }
+          if (scale == note.scale) {
+            // 시간 이동
+            if (time != note.time) {
+              var targetIndex = this.findIndex(scale, time);
+              var selectedIndex = this.indexOf(note);
+              if (targetIndex != selectedIndex) {
+                if (selectedIndex >= 0 && targetIndex > selectedIndex) {
+                  targetIndex -= 1;
+                }
+                if (selectedIndex >= 0) {
+                  this.lines[scale].splice(selectedIndex, 1);
+                }
+                this.lines[scale].splice(targetIndex, 0, note);
+              }
+              note.time = time;
+            }
+          } else {
+            // 음 이동
+            var selectedIndex = this.indexOf(note);
+            if (selectedIndex >= 0) {
+              this.lines[note.scale].splice(selectedIndex, 1);
+            }
+            var targetIndex = this.findIndex(scale, time);
+            this.lines[scale].splice(targetIndex, 0, note);
+            note.scale = scale;
+            note.time = time;
+          }
+        }
+      };
+      Sequencer.prototype.clear = function () {
+        for (var i = 0; i < this.lines.length; ++i) {
+          this.lines[i] = [];
+        }
+        this.scroll.set(0, 3 * 12);
+        this.noteWidthPerBeat = 30;
+        this.deselectNotes();
+        this.focusIndex = -1;
+        this.beatRatio = 1;
+        this.musicCursor = 0;
+        this.option =
+          "$ 시퀀서" +
+          this.tabNumber +
+          " 설정\nw~sin +sin2:0.5 +sin3:0.25\nw!a1 !d600 !s0 !r1\nw%100";
+        this.prevBeat = 1;
+        this.clipNotes = [];
+        this.volumeSeq.clear();
+        this.showVolume = false;
+        this.enabled = true;
+        this.prevEnabled = true;
+      };
+      Sequencer.prototype.focusOut = function () {
+        this.deselectNotes();
+        this.focusIndex = -1;
+        this.musicCursor = 0;
+        this.volumeSeq.focusOut();
+      };
+      Sequencer.prototype.moveFocus = function (position) {
+        // 목표 위치가 적당히 중앙에 오도록 조정.
+        this.scroll.x = position - this.beatPerPhase;
+        if (this.scroll.x < 0) {
+          this.scroll.x = 0;
+        }
+      };
+      Sequencer.prototype.build = function () {
+        var BEAT_PER_LINE = Math.max(
+          this.beatPerPhase,
+          4 * (4 - (Math.round(this.beatPerPhase / 4) % 2)),
+        );
+        var sheet = "|" + this.volumeSeq.volumes[0].volume + "w\r\n";
+        var indices = new Array(this.lines.length);
+        for (var i = 0; i < indices.length; ++i) {
+          indices[i] = 0;
+        }
+        var time = 0;
+        var isEnd = false;
+        var maxEndDelay = 0;
+        var lineGage = 0;
+        var lineNum = 1;
+        var nextVolumeIndex = 1;
+        sheet += "w\r\n$" + lineNum + "w\r\n";
+        while (!isEnd) {
+          isEnd = true;
+          var minTime = -1;
+          var minNotes = [];
+          for (var i = 0; i < indices.length; ++i) {
+            var n = indices[i];
+            if (n >= this.lines[i].length) {
+              continue;
+            }
+            isEnd = false;
+            var note = this.lines[i][n];
+            if (
+              note.time < minTime &&
+              Math.abs(note.time - minTime) > 0.000001
+            ) {
+              minNotes = [];
+            }
+            if (
+              minTime < 0 ||
+              note.time < minTime ||
+              Math.abs(note.time - minTime) < 0.000001
+            ) {
+              minTime = note.time;
+              minNotes.push(i);
+            }
+          }
+          if (isEnd) {
+            break;
+          }
+          var delay = minTime - time;
+          time = minTime;
+          lineGage += delay;
+          if (delay > 0) {
+            sheet += " " + round2(delay, 6);
+          }
+          // 개행 삽입
+          if (lineGage >= BEAT_PER_LINE) {
+            while (lineGage >= BEAT_PER_LINE) {
+              lineGage -= BEAT_PER_LINE;
+              sheet += "w\r\n";
+              lineNum += 1;
+              if (lineNum % 5 == 1) {
+                sheet += "w\r\n$ " + lineNum + "w\r\n";
+              }
+            }
+          } else if (delay > 0) {
+            sheet += " ";
+          }
+          // 볼륨 확인
+          if (
+            nextVolumeIndex < this.volumeSeq.volumes.length &&
+            time > this.volumeSeq.volumes[nextVolumeIndex].time - 0.000001
+          ) {
+            sheet +=
+              "!" +
+              round2(this.volumeSeq.volumes[nextVolumeIndex].volume, 4) +
+              " ";
+            nextVolumeIndex += 1;
+          }
+          var noteMap = new Map();
+          for (var i = 0; i < minNotes.length; ++i) {
+            var idx = minNotes[i];
+            var note = this.lines[idx][indices[idx]];
+            var name = this.indexToName[idx % 12];
+            var octave = Math.floor(idx / 12) + this.minOctave;
+            var noteText = name + octave;
+            if (noteMap.has(note.beat)) {
+              noteMap.get(note.beat).push(noteText);
+            } else {
+              noteMap.set(note.beat, [noteText]);
+            }
+            indices[idx] += 1;
+          }
+          if (noteMap.size > 0) {
+            maxEndDelay = 0;
+            // 노트 기록과 동시에 가장 긴 비트를 찾음
+            noteMap.forEach(function (noteList, beat) {
+              for (var i = 0; i < noteList.length; ++i) {
+                sheet += noteList[i] + ":";
+              }
+              sheet += round2(beat, 6) + ":";
+              if (beat > maxEndDelay) {
+                maxEndDelay = beat;
+              }
+            });
+            sheet += "" + round2(maxEndDelay, 6);
+          }
+        }
+        return sheet;
+      };
+      Sequencer.prototype.appendNote = function (time, scale, span) {
+        scale = scale - this.minOctave * 12;
+        if (scale >= 0 && scale < this.lines.length) {
+          var newNote = new Note();
+          newNote.scale = scale;
+          newNote.time = time;
+          newNote.beat = span;
+          this.lines[scale].push(newNote);
+        }
+      };
+      Sequencer.prototype.setMusicTime = function (time, moveScroll) {
+        var prevCursor = this.musicCursor;
+        this.musicCursor = (time * 1000) / this.timePerBeat;
+        if (moveScroll) {
+          var musicCursorX =
+            this.position.x +
+            this.pianoSize +
+            this.musicCursor * this.noteWidthPerBeat;
+          musicCursorX -= this.scroll.x * this.noteWidthPerBeat;
+          var prevX =
+            this.position.x +
+            this.pianoSize +
+            prevCursor * this.noteWidthPerBeat;
+          prevX -= this.scroll.x * this.noteWidthPerBeat;
+          if (
+            prevX < this.position.x + this.size.x - 16 &&
+            musicCursorX > this.position.x + this.size.x - 16
+          ) {
+            this.setHorizontalScroll(Math.floor(this.musicCursor));
+          }
+        }
+      };
+      Sequencer.prototype.setHorizontalScroll = function (scroll) {
+        this.scroll.x = scroll;
+        if (this.scroll.x < 0) {
+          this.scroll.x = 0;
+        }
+      };
+      Sequencer.prototype.setVerticalScroll = function (scroll) {
+        this.scroll.y = scroll;
+        var maxY =
+          Math.floor(
+            (this.maxOctave - this.minOctave + 1) * 12 -
+              this.size.y / this.noteHeight,
+          ) + 1;
+        if (this.scroll.y > maxY) {
+          this.scroll.y = maxY;
+        } else if (this.scroll.y < 0) {
+          this.scroll.y = 0;
+        }
+      };
+      Sequencer.prototype.setHorizontalSize = function (size) {
+        if (size < 4) {
+          size = 4;
+        } else if (size > 90) {
+          size = 90;
+        }
+        this.noteWidthPerBeat = size;
+        this.volumeSeq.widthPerBeat = size;
+      };
+      Sequencer.prototype.setVerticalSize = function (size) {
+        if (size < 8) {
+          size = 8;
+        } else if (size > 22) {
+          size = 22;
+        }
+        this.noteHeight = size;
+      };
+      Sequencer.prototype.getNoteCount = function () {
+        var count = 0;
+        for (var i = 0; i < this.lines.length; ++i) {
+          count += this.lines[i].length;
+        }
+        return count;
+      };
+      function VolumeBar() {
+        this.position = Vector.zero();
+        this.length = 100;
+        this.size = 18;
+        this.volume = 100;
+        this.controlMode = false;
+        this.seqNum = -1;
+        this.onChange = function (sender) {};
+      }
+      VolumeBar.prototype.clear = function () {
+        this.volume = 100;
+        this.controlMode = false;
+      };
+      VolumeBar.prototype.update = function () {
+        var cursor = g_mouse.getCursor();
+        if (g_mouse.onDown()) {
+          if (
+            cursor.x > this.position.x - this.size / 2 &&
+            cursor.x < this.position.x + this.size / 2 &&
+            cursor.y >= this.position.y - this.length &&
+            cursor.y <= this.position.y
+          ) {
+            this.controlMode = true;
+          }
+        } else if (g_mouse.onPressed() && this.controlMode) {
+          var volume = ((this.position.y - cursor.y) / this.length) * 100;
+          if (volume < 0) {
+            volume = 0;
+          } else if (volume > 100) {
+            volume = 100;
+          }
+          if (volume !== this.volume) {
+            this.volume = volume;
+            this.onChange(this);
+          }
+        } else if (g_mouse.onUp()) {
+          this.controlMode = false;
+        }
+      };
+      VolumeBar.prototype.render = function (g) {
+        // 테두리
+        g.beginDrawRect("rgb(48, 48, 48)", 2);
+        g.drawRect(
+          this.position.x - this.size / 2,
+          this.position.y - this.length,
+          this.size,
+          this.length,
+        );
+        g.endDrawRect();
+        // 배경
+        g.beginDrawLine("rgb(127, 127, 127)", this.size);
+        g.drawLine(
+          this.position.x,
+          this.position.y,
+          this.position.x,
+          this.position.y - this.length,
+        );
+        g.endDrawLine();
+        // 바
+        g.beginDrawLine("rgb(250, 250, 250)", this.size);
+        g.drawLine(
+          this.position.x,
+          this.position.y,
+          this.position.x,
+          this.position.y - (this.volume / 100) * this.length,
+        );
+        g.endDrawLine();
+        // 볼륨 텍스트
+        if (Math.round(this.volume) < 100) {
+          g.beginDrawText("black", "12px");
+          g.drawTextCenter(
+            Math.round(this.volume),
+            this.position.x,
+            this.position.y - this.length / 2 + 4,
+          );
+          g.endDrawText();
+        }
+      };
+    </script>
+    <script type="text/javascript">
+      function SequencerList() {
+        this.position = Vector.zero();
+        this.size = new Vector(1, 1);
+        this.scroll = Vector.zero();
+        this.seq = new Array(15);
+        this.currentSeq = -1;
+        this.volumes = new Array(this.seq.length);
+        this.option = "$ 전역 설정\nw%100";
+        this.seqHeight = 128;
+        this.noteHeight = 4;
+        this.noteWidth = 4;
+        this.boxWidth = 300;
+        this.focusPhase = new Vector(-1, -1);
+        this.timePerBeat = 100;
+        this.timeCursor = 0;
+        this.prevSound = null;
+        this.prevSheetList = new Array(this.seq.length);
+        this.bakEnabledList = new Array(this.seq.length);
+        this.lastBackupTime = new Date();
+        this.whenOptionChanged = null;
+        this.whenCursorChanged = null;
+      }
+      SequencerList.prototype.init = function (x, y, width, height) {
+        this.position.set(x, y);
+        this.size.set(width, height);
+        for (var i = 0; i < this.seq.length; ++i) {
+          var sq = new Sequencer();
+          sq.tabNumber = i + 1;
+          sq.position.set(x, y);
+          sq.size.set(width, height);
+          sq.option =
+            "$ 시퀀서" +
+            sq.tabNumber +
+            " 설정\nw~sin +sin2:0.5 +sin3:0.25\nw!a1 !d6000 !s0 !r1\nw%100";
+          sq.onSetCursor = function (sender, targetBeat) {
+            if (this.whenCursorChanged) {
+              this.whenCursorChanged(sender, targetBeat);
+            }
+          }.bind(this);
+          sq.init();
+          this.seq[i] = sq;
+          var vol = new VolumeBar();
+          vol.seqNum = i;
+          vol.position.set(290, y + this.seqHeight * (i + 1) - 14);
+          vol.onChange = function (sender) {
+            var seq = this.seq[sender.seqNum];
+            // 볼륨 시퀀서 옵션에도 적용
+            var option = seq.option;
+            var index = option.indexOf("%");
+            if (index < 0) {
+              option += "\n%" + sender.volume;
+            } else {
+              var endIndex = index + 1;
+              for (; endIndex < option.length; ++endIndex) {
+                if (!isNum(option[endIndex]) && option[endIndex] != ".") {
+                  break;
+                }
+              }
+              option =
+                option.substr(0, index + 1) +
+                round2(sender.volume, 4) +
+                option.substr(endIndex, option.length - endIndex);
+            }
+            seq.option = option;
+          }.bind(this);
+          this.volumes[i] = vol;
+          this.prevSheetList[i] = "";
+          this.bakEnabledList[i] = true;
+        }
+      };
+      SequencerList.prototype.update = function () {
+        // 5분마다 백업.
+        var time = new Date();
+        if (time - this.lastBackupTime >= 5 * 60 * 1000) {
+          this.lastBackupTime = time;
+          this.backup();
+        }
+        // 박자 변경
+        if (g_keyboard.onPressed(Keys.Ctrl)) {
+          var num = -1;
+          for (var i = 0; i <= 9; ++i) {
+            if (
+              g_keyboard.onDown(
+                Keys[String.fromCharCode("0".charCodeAt(0) + i)],
+              )
+            ) {
+              num = i;
+              break;
+            }
+          }
+          if (num > 0) {
+            for (var i = 0; i < this.seq.length; ++i) {
+              this.seq[i].beatPerPhase = 4 * num;
+            }
+          }
+        }
+        if (this.isLocalMode()) {
+          var seq = this.getCurrentSeq();
+          seq.update();
+          if (g_keyboard.onDown(Keys.Escape)) {
+            if (seq.selectedNotes.length > 0) {
+              // 노트 선택 취소
+              seq.deselectNotes();
+            } else {
+              // 전체 시퀀서 화면으로 전환
+              this.changeSequencer(-1);
+            }
+          }
+        } else {
+          var cursor = g_mouse.getCursor();
+          // 볼륨 조절바
+          for (var i = 0; i < this.volumes.length; ++i) {
+            var bar = this.volumes[i];
+            if (bar.position.y < this.position.y) {
+              continue;
+            }
+            bar.update();
+          }
+          // 스크롤 초기화
+          if (
+            g_keyboard.onDown(Keys.Backspace) ||
+            g_keyboard.onDown(Keys.Home)
+          ) {
+            this.scroll.x = 0;
+          }
+          if (cursor.x < this.position.x + this.boxWidth) {
+            // 상하 스크롤
+            if (g_mouse.onWheelDown()) {
+              this.moveVerticalScroll(this.seqHeight / 4);
+            } else if (g_mouse.onWheelUp()) {
+              this.moveVerticalScroll(-this.seqHeight / 4);
+            }
+          } else {
+            var scrollSize = 8;
+            if (g_keyboard.onPressed(Keys.Shift)) {
+              scrollSize = 24;
+            }
+            // 좌우 스크롤
+            if (g_mouse.onWheelDown()) {
+              this.scroll.x += scrollSize;
+            } else if (g_mouse.onWheelUp()) {
+              this.scroll.x -= scrollSize;
+              if (this.scroll.x < 0) {
+                this.scroll.x = 0;
+              }
+            }
+          }
+          this.focusPhase.set(-1, -1);
+          // 툴 포커스 계산
+          if (
+            cursor.x > this.position.x + this.boxWidth &&
+            cursor.x < this.position.x + this.size.x &&
+            cursor.y > this.position.y &&
+            cursor.y < this.position.y + this.size.y
+          ) {
+            var focusSeq = Math.floor(
+              (cursor.y - this.position.y + this.scroll.y) / this.seqHeight,
+            );
+            if (focusSeq < 0 || focusSeq >= this.seq.length) {
+              focusSeq = -1;
+            }
+            var focusPhase = Math.floor(
+              (cursor.x - this.position.x - this.boxWidth) / this.noteWidth,
+            );
+            focusPhase += this.scroll.x;
+            if (focusPhase < 0) {
+              focusPhase = -1;
+            }
+            this.focusPhase.y = focusSeq;
+            this.focusPhase.x = focusPhase;
+            if (g_mouse.onDown()) {
+              if (this.focusPhase.y >= 0) {
+                // 툴 편집
+                this.changeSequencer(this.focusPhase.y);
+              } else if (
+                cursor.x > this.position.x &&
+                cursor.x < this.position.x + this.boxWidth - 48 &&
+                cursor.y > this.position.y &&
+                cursor.y < this.position.y + this.size.y
+              ) {
+                // 채널 토글
+                var focusSeq = Math.floor(
+                  (cursor.y - this.position.y + this.scroll.y) / this.seqHeight,
+                );
+                if (focusSeq >= 0 && focusSeq < this.seq.length) {
+                  this.seq[focusSeq].toggle();
+                  // 단일 모드에서 열린 모드로 돌아왔을때 채널 활성화 옵션 복구를 위해 백업.
+                  this.bakEnabledList[focusSeq] = this.seq[focusSeq].enabled;
+                }
+              } else if (
+                cursor.x > this.position.x + this.boxWidth &&
+                cursor.x < this.position.x + this.size.x &&
+                cursor.y > this.position.y - 24 &&
+                cursor.y < this.position.y
+              ) {
+                // 커서 이동
+                var realX =
+                  cursor.x -
+                  this.position.x -
+                  this.boxWidth +
+                  this.scroll.x * this.noteWidth;
+                var cursorBeat = realX / this.noteWidth;
+                if (this.whenCursorChanged) {
+                  this.whenCursorChanged(this, cursorBeat);
+                }
+              }
+            }
+          }
+        }
+      };
+      SequencerList.prototype.render = function (g) {
+        var cursor = g_mouse.getCursor();
+        if (this.isLocalMode()) {
+          var seq = this.getCurrentSeq();
+          seq.render(g);
+        } else {
+          for (var y = 0; y < this.seq.length; ++y) {
+            var seq = this.seq[y];
+            var yPos = this.position.y + y * this.seqHeight - this.scroll.y;
+            // 화면을 벗어나면 그리지 않음
+            if (yPos < this.position.y - this.seqHeight) {
+              continue;
+            } else if (yPos > this.position.y + this.size.y) {
+              break;
+            }
+            // 좌측 배경
+            g.beginFillRect(
+              seq.enabled ? "rgb(240, 240, 240)" : "rgb(200, 200, 200)",
+            );
+            g.fillRect(this.position.x, yPos, this.boxWidth, this.seqHeight);
+            g.endFillRect();
+            // 채널 On/Off 시각화
+            if (!seq.enabled) {
+              g.beginDrawLine("rgb(100, 100, 100)", 2);
+              g.drawLine(
+                this.position.x,
+                yPos,
+                this.position.x + this.boxWidth,
+                yPos + this.seqHeight,
+              );
+              g.endDrawLine();
+            }
+            // 시퀀서 정보
+            var seqOptions = seq.option.split("\n");
+            g.beginDrawText("black", "14px");
+            for (var i = 0; i < seqOptions.length; ++i) {
+              var optionText = "";
+              var textWidth = 0;
+              var strIndex = 0;
+              while (
+                textWidth < this.boxWidth - 48 &&
+                strIndex < seqOptions[i].length
+              ) {
+                optionText += seqOptions[i][strIndex];
+                textWidth = g.measureText(optionText);
+                strIndex += 1;
+              }
+              if (strIndex < seqOptions[i].length) {
+                optionText += "...";
+              }
+              g.drawText(optionText, this.position.x + 6, yPos + 22 + i * 18);
+              if (i >= 5) {
+                break;
+              }
+            }
+            g.endDrawText();
+            // 포커스 배경
+            if (y == this.focusPhase.y) {
+              g.beginFillRect("rgb(240, 240, 240)");
+              g.fillRect(
+                this.position.x + this.boxWidth,
+                yPos,
+                this.size.x - this.boxWidth,
+                this.seqHeight,
+              );
+              g.endFillRect();
+            }
+            // 마디 구분선
+            seq.renderPhaseSplitter(
+              g,
+              this.position.x,
+              yPos,
+              this.size.x,
+              this.seqHeight,
+              this.noteWidth,
+              this.boxWidth,
+              this.scroll.x,
+              1,
+              "rgb(220, 220, 220)",
+              2,
+            );
+            // 노트
+            seq.renderNotes(
+              g,
+              this.position.x,
+              yPos + this.noteHeight,
+              this.size.x,
+              this.seqHeight - this.noteHeight * 2,
+              this.noteWidth,
+              this.noteHeight,
+              this.boxWidth,
+              this.scroll.x,
+              seq.scroll.y,
+            );
+            // 테두리
+            g.beginDrawRect("black", 2);
+            g.drawRect(this.position.x, yPos, this.size.x, this.seqHeight);
+            g.endDrawRect();
+            // 볼륨 조절바
+            for (var i = 0; i < this.volumes.length; ++i) {
+              var bar = this.volumes[i];
+              if (bar.position.y < this.position.y) {
+                continue;
+              }
+              bar.render(g);
+            }
+            // 테두리 정리
+            g.beginFillRect("white");
+            g.fillRect(
+              this.position.x - 4,
+              this.position.y - this.seqHeight - 4,
+              this.size.x + 8,
+              this.seqHeight + 4,
+            );
+            g.fillRect(0, this.position.y, this.position.x, this.size.y);
+            g.fillRect(
+              this.position.x - 4,
+              this.position.y + this.size.y,
+              this.size.x + 8,
+              128,
+            );
+            g.fillRect(
+              this.position.x + this.size.x,
+              this.position.y - this.seqHeight + 512,
+              this.size.y + this.seqHeight * 2,
+            );
+            g.endFillRect();
+            // 전체 시퀀서 요약 정보
+            var totalNoteCount = 0;
+            for (var i = 0; i < this.seq.length; ++i) {
+              totalNoteCount += this.seq[i].getNoteCount();
+            }
+            g.beginDrawText("black", "14px");
+            g.drawText(
+              "총 노트 " + totalNoteCount + "개",
+              this.position.x + 2,
+              this.position.y - 8,
+            );
+            g.endDrawText();
+            // 마디 번호 배경
+            g.beginFillRect("rgb(240, 240, 240)");
+            g.fillRect(
+              this.position.x + this.boxWidth,
+              this.position.y - 24,
+              this.size.x - this.boxWidth,
+              24,
+            );
+            g.endFillRect();
+            // 마디 번호
+            this.seq[0].renderPhaseNumber(
+              g,
+              this.position.x,
+              this.position.y,
+              this.boxWidth,
+              this.size.x,
+              this.noteWidth,
+              this.scroll.x,
+            );
+            // 목표 커서
+            if (
+              cursor.x > this.position.x + this.boxWidth &&
+              cursor.x < this.position.x + this.size.x &&
+              cursor.y > this.position.y - 24 &&
+              cursor.y < this.position.y
+            ) {
+              g.beginDrawLine("red", 1);
+              g.drawLine(
+                cursor.x,
+                this.position.y - 24,
+                cursor.x,
+                this.position.y,
+              );
+              g.endDrawLine();
+            }
+            // 시간 커서
+            var timeCursorX = this.position.x + this.boxWidth;
+            timeCursorX +=
+              this.timeCursor * this.noteWidth - this.scroll.x * this.noteWidth;
+            if (
+              timeCursorX > this.position.x + this.boxWidth &&
+              timeCursorX < this.position.x + this.size.x
+            ) {
+              g.beginDrawLine("red", 1);
+              g.drawLine(
+                timeCursorX,
+                this.position.y - 24,
+                timeCursorX,
+                this.position.y + this.size.y,
+              );
+              g.endDrawLine();
+            }
+            // 구분선
+            g.beginDrawLine("black", 2);
+            g.drawLine(
+              this.position.x + this.boxWidth,
+              this.position.y - 24,
+              this.position.x + this.boxWidth,
+              this.position.y + this.size.y,
+            );
+            g.endDrawLine();
+          }
+        }
+      };
+      SequencerList.prototype.isLocalMode = function () {
+        return this.currentSeq >= 0;
+      };
+      SequencerList.prototype.getCurrentSeq = function () {
+        if (this.isLocalMode()) {
+          return this.seq[this.currentSeq];
+        }
+        return null;
+      };
+      SequencerList.prototype.moveVerticalScroll = function (delta) {
+        var oldScroll = this.scroll.y;
+        this.scroll.y += delta;
+        var maxScrollY = this.seqHeight * this.seq.length - this.size.y;
+        if (this.scroll.y > maxScrollY) {
+          this.scroll.y = maxScrollY;
+        } else if (this.scroll.y < 0) {
+          this.scroll.y = 0;
+        }
+        var realDelta = this.scroll.y - oldScroll;
+        for (var i = 0; i < this.volumes.length; ++i) {
+          this.volumes[i].position.move(0, -realDelta);
+        }
+      };
+      SequencerList.prototype.setOption = function (option) {
+        if (this.isLocalMode()) {
+          this.seq[this.currentSeq].option = option;
+          // 볼륨 컨트롤러 동기화
+          var index = option.indexOf("%");
+          if (index < 0) {
+            this.volumes[this.currentSeq].volume = 100;
+          } else {
+            var endIndex = index + 1;
+            for (; endIndex < option.length; ++endIndex) {
+              if (!isNum(option[endIndex]) && option[endIndex] != ".") {
+                break;
+              }
+            }
+            var volOption = parseFloat(
+              option.substr(index + 1, endIndex - index - 1),
+            );
+            this.volumes[this.currentSeq].volume = limitNumber(
+              volOption,
+              0,
+              100,
+            );
+          }
+        } else {
+          this.option = option;
+        }
+        if (this.whenOptionChanged) {
+          this.whenOptionChanged();
+        }
+      };
+      SequencerList.prototype.getOption = function () {
+        if (this.isLocalMode()) {
+          return this.seq[this.currentSeq].option;
+        }
+        return this.option;
+      };
+      SequencerList.prototype.changeSequencer = function (num) {
+        if (num >= this.seq.length) {
+          num = -1;
+        }
+        if (this.currentSeq != num) {
+          if (this.currentSeq >= 0) {
+            if (num >= 0) {
+              // 시퀀서 화면에서 다른 시퀀서로 넘어가는 경우
+              // 스크롤을 동기화
+              this.seq[num].scroll.x = this.seq[this.currentSeq].scroll.x;
+            }
+            this.seq[this.currentSeq].focusOut();
+            // 활성화 상태 복구
+            this.seq[this.currentSeq].enabled =
+              this.bakEnabledList[this.currentSeq];
+          } else if (num >= 0) {
+            // 스크롤 동기화
+            if (this.focusPhase.x < 0) {
+              this.seq[num].moveFocus(this.scroll.x);
+            } else {
+              this.seq[num].moveFocus(this.focusPhase.x);
+            }
+            // 단일 모드에서는 채널이 비활성화 상태라도
+            // 켜진 것 처럼 작동해야 하므로 임시로 활성화 시킴.
+            if (num >= 0) {
+              this.seq[num].enabled = true;
+            }
+            this.currentSeq = num;
+            if (this.whenOptionChanged) {
+              this.whenOptionChanged();
+            }
+          }
+        }
+      };
+      SequencerList.prototype.setMusicTime = function (time, moveScroll) {
+        var prevCursor = this.timeCursor;
+        this.timeCursor = (time * 1000) / this.timePerBeat;
+        if (this.isLocalMode()) {
+          this.getCurrentSeq().setMusicTime(time, moveScroll);
+        } else if (moveScroll) {
+          var timeCursorX = this.position.x + this.boxWidth;
+          timeCursorX +=
+            this.timeCursor * this.noteWidth - this.scroll.x * this.noteWidth;
+          var prevX = this.position.x + this.boxWidth;
+          prevX += prevCursor * this.noteWidth - this.scroll.x * this.noteWidth;
+          if (
+            prevX < this.position.x + this.size.x - 16 &&
+            timeCursorX > this.position.x + this.size.x - 16
+          ) {
+            this.scroll.x = Math.floor(this.timeCursor);
+          }
+        }
+      };
+      SequencerList.prototype.clear = function (noConfirm) {
+        if (this.isLocalMode()) {
+          if (
+            noConfirm ||
+            confirm(this.currentSeq + 1 + "번 시퀀서를 초기화 하시겠습니까?")
+          ) {
+            this.seq[this.currentSeq].clear();
+            this.volumes[this.currentSeq].clear();
+            if (this.whenOptionChanged) {
+              this.whenOptionChanged();
+            }
+            return true;
+          }
+        } else if (noConfirm || confirm("모든 시퀀서를 초기화 하시겠습니까?")) {
+          for (var i = 0; i < this.seq.length; ++i) {
+            this.seq[i].clear();
+            this.volumes[i].clear();
+            this.prevSheetList[i] = "";
+            this.bakEnabledList[i] = true;
+          }
+          this.scroll.set(0, 0);
+          this.focusPhase.set(-1, -1);
+          this.option = "$ 전역 설정\nw%100";
+          this.clearBackup();
+          this.lastBackupTime = new Date();
+          if (this.whenOptionChanged) {
+            this.whenOptionChanged();
+          }
+          return true;
+        }
+        return false;
+      };
+      SequencerList.prototype.makeSound = function (all) {
+        // 마지막 백업 후 최소 1분이 지났으면 백업.
+        var time = new Date();
+        if (time - this.lastBackupTime >= 60 * 1000) {
+          this.lastBackupTime = time;
+          this.backup();
+        }
+        if (this.isLocalMode() == false) {
+          all = true;
+        }
+        var cached = this.prevSound !== null;
+        var musicList = [];
+        // 채널 생성
+        for (var i = 0; i < this.seq.length; ++i) {
+          var seq = this.seq[i];
+          if (!all && i != this.currentSeq) {
+            // 단일 모드시 현재 채널을 제외하고 전부 무시함.
+            continue;
+          } else if (all) {
+            // 채널 활성화 여부가 바뀌었다면 캐시 유효성이 깨짐.
+            if (seq.enabled != seq.prevEnabled) {
+              seq.prevEnabled = seq.enabled;
+              cached = false;
+            }
+            // 비활성화 상태인 채널 무시.
+            if (!seq.enabled) {
+              continue;
+            }
+          }
+          var sheetText = "";
+          // 상위 채널의 설정에 하위 채널이 영향을 받을 수 있으므로
+          // 상위 채널의 설정도 포함한다.
+          for (var upSeq = 0; upSeq < i; ++upSeq) {
+            var uptions = this.seq[upSeq].option.split("\n");
+            var buffer = "";
+            for (var j = 0; j < uptions.length; ++j) {
+              var line = uptions[j].trim();
+              if (line.length > 0 && (line[0] == "&" || line[0] == "[")) {
+                buffer += line + "\n";
+              }
+            }
+            sheetText += buffer;
+          }
+          sheetText += seq.option + "\n" + this.option + "\n" + seq.build();
+          var musicData = null;
+          // 코드가 이전과 같으면 새로 만들지 않음.
+          if (all) {
+            if (this.prevSheetList[i] == sheetText) {
+              musicData = seq.prevMusicData;
+            }
+          } else if (seq.prevSheet == sheetText) {
+            musicData = seq.prevMusicData;
+          }
+          if (musicData === null) {
+            musicData = MusicMaker.createMusic(sheetText);
+            seq.prevSheet = sheetText;
+            seq.prevMusicData = musicData;
+            if (all) {
+              this.prevSheetList[i] = sheetText;
+            }
+            cached = false;
+          }
+          musicList.push(musicData);
+          seq.timePerBeat = musicData.speed;
+          this.timePerBeat = musicData.speed;
+        }
+        var totalBuffer = [0];
+        if (cached == false && all) {
+          // 채널 합성
+          for (var i = 0; i < musicList.length; ++i) {
+            var musicData = musicList[i];
+            var buffer = musicData.sound.getBuffer();
+            while (buffer.length > totalBuffer.length) {
+              totalBuffer.push(0);
+            }
+            for (var t = 0; t < buffer.length; ++t) {
+              totalBuffer[t] += buffer[t];
+            }
+          }
+          // 정규화
+          var maxValue = 1;
+          for (var i = 0; i < totalBuffer.length; ++i) {
+            var absVal = Math.abs(totalBuffer[i]);
+            if (absVal > maxValue) {
+              maxValue = absVal;
+            }
+          }
+          if (maxValue > 1) {
+            for (var i = 0; i < totalBuffer.length; ++i) {
+              totalBuffer[i] /= maxValue;
+            }
+          }
+        }
+        if (all) {
+          if (cached == false) {
+            this.prevSound = Sound.fromPcm(totalBuffer, 44100);
+          }
+          return this.prevSound;
+        }
+        return this.seq[this.currentSeq].prevMusicData.sound;
+      };
+      SequencerList.prototype.build = function (all) {
+        var sheetText = "";
+        if (all && this.isLocalMode()) {
+          sheetText = this.seq[this.currentSeq].build();
+        } else {
+          var globalOption = this.option.replace(/\n/gm, "\r\n") + "\r\nw\r\n";
+          for (var i = 0; i < this.seq.length; ++i) {
+            if (this.seq[i].getNoteCount() > 0) {
+              var text = this.seq[i].build();
+              sheetText += "- Seq " + (i + 1) + "\r\n\r\n";
+              sheetText += this.seq[i].option.replace(/\n/gm, "\r\n") + "\r\n";
+              sheetText += globalOption;
+              sheetText += text + "\r\n\r\n\r\n";
+            }
+          }
+          if (sheetText.length > 0) {
+            sheetText = "$ TITLE\r\n\r\n\r\n\r\n" + sheetText;
+          }
+        }
+        return sheetText;
+      };
+      SequencerList.prototype.backup = function () {
+        var sheet = this.build(true);
+        g_db.set("bak_seq", sheet);
+      };
+      SequencerList.prototype.clearBackup = function () {
+        g_db.remove("bak_seq");
+      };
+      SequencerList.prototype.restore = function () {
+        if (g_db.contains("bak_seq")) {
+          this.load(g_db.get("bak_seq"), true);
+        }
+      };
+      SequencerList.prototype.load = function (sheet, noConfirm) {
+        if (this.clear(noConfirm) == false) {
+          return false;
+        }
+        var paragraphOp = new Map();
+        var beginOpParagraph = 0;
+        var currentParagraph = -1;
+        var currentSeqNum = this.isLocalMode() ? this.currentSeq - 1 : -1;
+        var stopFlag = false;
+        var checkSpeed = true;
+        var onlyGlobalSpeed = false;
+        var globalBpm = -1;
+        var timePerBeat = -1;
+        var opFunc = function (paragraph, op) {
+          // 신스 문법 기록
+          if (paragraphOp.has(paragraph)) {
+            paragraphOp.set(paragraph, paragraphOp.get(paragraph) + "\n" + op);
+          } else {
+            paragraphOp.set(paragraph, op);
+          }
+        }.bind(this);
+        var noteFunc = function (
+          paragraph,
+          channelVolume,
+          volume,
+          speed,
+          isBpm,
+          bpm,
+          time,
+          scale,
+          span,
+          wave,
+          adsr,
+        ) {
+          if (stopFlag) {
+            return;
+          }
+          if (currentParagraph != paragraph) {
+            currentParagraph = paragraph;
+            currentSeqNum += 1;
+            maxScale = 0;
+            // 로컬 모드인데 다음 시퀀서로 넘어갔거나
+            // 다음 시퀀서가 없으면 중지
+            if (
+              (currentSeqNum > this.currentSeq && this.isLocalMode()) ||
+              currentSeqNum >= this.seq.length
+            ) {
+              stopFlag = true;
+            }
+          }
+          if (!stopFlag) {
+            var seq = this.seq[currentSeqNum];
+            var volBar = this.volumes[currentSeqNum];
+            // 시퀀서 설정 불러오기
+            var seqOption = "$ 시퀀서" + (currentSeqNum + 1) + " 설정\n";
+            for (var p = beginOpParagraph; p <= paragraph; ++p) {
+              if (paragraphOp.has(p)) {
+                seqOption += paragraphOp.get(p) + "\n";
+              }
+            }
+            beginOpParagraph = paragraph + 1;
+            seqOption +=
+              "~" + wave.substring(1, wave.length).replace(/\w+/gm, "+") + "\n";
+            seqOption +=
+              "!a" +
+              adsr[0] +
+              "!d" +
+              adsr[1] +
+              "!s" +
+              adsr[2] +
+              "!r" +
+              adsr[3] +
+              "\n";
+            seqOption += "%" + round2(channelVolume * 100, 6);
+            seq.option = seqOption;
+            // 스크롤 조정
+            seq.setVerticalScroll(
+              Math.floor((seq.maxOctave - seq.minOctave + 1) * 12 - scale),
+            );
+            // 볼륨 컨트롤러 설정
+            volBar.volume = limitNumber(channelVolume * 100, 0, 100);
+            // 전역 속도 기록
+            if (this.timePerBeat < 0) {
+              this.timePerBeat = speed;
+              globalBpm = isBpm ? bpm : -1;
+            }
+            if (!stopFlag && currentSeqNum < this.seq.length) {
+              if (checkSpeed && this.timePerBeat != speed) {
+                checkSpeed = false;
+                onlyGlobalSpeed = confirm(
+                  "변속은 지원하지 않습니다.\n변환을 수행하시겠습니까?",
+                );
+              }
+              if (onlyGlobalSpeed) {
+                speed = this.timePerBeat;
+              }
+              this.seq[currentSeqNum].appendNote(
+                (time * 1000) / speed,
+                scale,
+                (span * 1000) / speed,
+              );
+              this.seq[currentSeqNum].volumeSeq.appendDot(
+                (time * 1000) / speed,
+                volume,
+              );
+            }
+          }
+        }.bind(this);
+        MusicMaker.createMusic(sheet, opFunc, noteFunc);
+        if (this.timePerBeat < 0) {
+          this.timePerBeat = 100;
+        }
+        this.option = "$ 전역 설정\n";
+        if (globalBpm > 0) {
+          this.option += "*bpm" + globalBpm;
+        } else {
+          this.option += "*" + this.timePerBeat;
+        }
+        if (this.whenOptionChanged) {
+          this.whenOptionChanged();
+        }
+        return true;
+      };
+      SequencerList.prototype.getScrollTime = function () {
+        if (seqList.isLocalMode()) {
+          var seq = this.getCurrentSeq();
+          return (seq.scroll.x * seq.timePerBeat) / 1000.0;
+        }
+        return (this.scroll.x * this.timePerBeat) / 1000.0;
+      };
+      function Complex(re, im) {
+        this.re = re;
+        this.im = im || 0.0;
+      }
+      Complex.prototype.add = function (other, dst) {
+        dst.re = this.re + other.re;
+        dst.im = this.im + other.im;
+        return dst;
+      };
+      Complex.prototype.sub = function (other, dst) {
+        dst.re = this.re - other.re;
+        dst.im = this.im - other.im;
+        return dst;
+      };
+      Complex.prototype.mul = function (other, dst) {
+        var r = this.re * other.re - this.im * other.im;
+        dst.im = this.re * other.im + this.im * other.re;
+        dst.re = r;
+        return dst;
+      };
+      Complex.prototype.cexp = function (dst) {
+        var er = Math.exp(this.re);
+        dst.re = er * Math.cos(this.im);
+        dst.im = er * Math.sin(this.im);
+        return dst;
+      };
+      function MusicVisualizer() {
+        this.position = Vector.zero();
+        this.size = new Vector(128, 64);
+        this.buffer = new Array(2048);
+        this.fftData = new Array(this.buffer.length);
+        for (var i = 0; i < this.fftLength; ++i) {
+          this.buffer[i] = 0;
+          this.fftData[i] = 0;
+        }
+        this.fftMode = true;
+      }
+      MusicVisualizer.prototype.update = function (musicBuffer, offset) {
+        if (
+          buffer.length >= this.buffer.length &&
+          offset < musicBuffer.length
+        ) {
+          for (var i = 0; i < this.buffer.length; ++i) {
+            var target = musicBuffer[offset - this.buffer.length + i];
+            this.buffer[i] = target;
+            this.fftData[i] = target;
+          }
+          // FFT 수행
+          if (this.fftMode) {
+            this.fftData = this.fft(this.fftData);
+          }
+        }
+      };
+      MusicVisualizer.prototype.render = function (g) {
+        if (this.fftMode) {
+          this.renderFft(g);
+        } else {
+          this.renderWave(g);
+        }
+      };
+      MusicVisualizer.prototype.renderWave = function (g) {
+        var waveLength = this.buffer.length;
+        var waveHeight = this.size.y / 2;
+        g.beginDrawPath("rgb(39, 155, 109)", 0.2);
+        g.drawPathMoveTo(
+          this.position.x,
+          this.position.y - this.buffer[0] * waveHeight,
+        );
+        for (var i = 1; i < this.buffer.length; ++i) {
+          var pcm = this.buffer[i];
+          var xPos = this.position.x + (this.size.x / waveLength) * i;
+          g.drawPathLineTo(xPos, this.position.y - pcm * waveHeight);
+        }
+        g.endDrawPath();
+      };
+      MusicVisualizer.prototype.renderFft = function (g) {
+        var waveLength = Math.floor(this.fftData.length / 12.0);
+        var waveHeight = this.size.y / 2;
+        var scale = 8.0;
+        g.beginDrawLine("rgb(39, 155, 109)", 0.5);
+        for (var i = 0; i < waveLength; ++i) {
+          var amp = this.fftData[i];
+          var xPos = this.position.x + (this.size.x / waveLength) * i;
+          var height = Math.min(Math.abs(amp) * waveHeight * scale, waveHeight);
+          g.drawLine(
+            xPos,
+            this.position.y - height,
+            xPos,
+            this.position.y + height,
+          );
+        }
+        g.endDrawLine();
+      };
+      MusicVisualizer.prototype.dft = function (amp) {
+        for (var i = 0; i < amp.length; ++i) {
+          amp[i] = new Complex(amp[i], 0);
+        }
+        amp = this.cfft(amp);
+        for (var i = 0; i < amp.length; ++i) {
+          amp[i] = amp[i].re;
+        }
+        return amp;
+      };
+      MusicVisualizer.prototype.idft = function (amp) {
+        var N = amp.length;
+        var iN = 1.0 / N;
+        for (var i = 0; i < N; ++i) {
+          amp[i].im = -amp[i].im;
+        }
+        amp = this.cfft(amp);
+        for (var i = 0; i < N; ++i) {
+          amp[i].im = -amp[i].im;
+          amp[i].re *= iN;
+          amp[i].im *= iN;
+        }
+        return amp;
+      };
+      MusicVisualizer.prototype.cfft = function (amp) {
+        var N = amp.length;
+
+        if (N <= 1) {
+          return amp;
+        }
+
+        var hN = N / 2;
+        var even = new Array(hN);
+        var odd = new Array(hN);
+
+        for (var i = 0; i < hN; ++i) {
+          even[i] = amp[i * 2];
+          odd[i] = amp[i * 2 + 1];
+        }
+
+        even = this.cfft(even);
+        odd = this.cfft(odd);
+
+        var a = -2 * Math.PI;
+
+        for (var k = 0; k < hN; ++k) {
+          var p = k / N;
+          var t = new Complex(0, a * p);
+
+          t.cexp(t).mul(odd[k], t);
+          amp[k] = even[k].add(t, odd[k]);
+          amp[k + hN] = even[k].sub(t, even[k]);
+        }
+
+        return amp;
+      };
+    </script>
+
+    <script type="text/javascript">
+      const bokuNoFriend = `$ Boku no friend
+
+< Kemono Friends ED >
+
+- Main
+
+~sqr1
+!0.6
+*90
+
+/* 이미지 1~6과 8의 악보 데이터:
+   음이름, 옥타브 숫자, 길이 숫자 및 구분 기호 일부를
+   사진에서 확정할 수 없어 여기에 임의로 기입하지 않았습니다. */
+
+- Sub
+
+~tri1 + tri2:0.5 + tri3:0.25 + tri4:0.125 + tri5:0.0625
+*90
+
+/* Sub 악보 데이터 — 판독 불가 */`;
+    </script>
+
+    <script type="text/javascript">
+      var board = null;
+      var graphics = null;
+      var player = new MusicPlayer();
+      var musicTitle = "Untitled";
+      var musicIndex = 0;
+      var testSheet = new TestSheet();
+      var visualizer = new MusicVisualizer();
+      var seqList = new SequencerList();
+      var fileQueue = [];
+      var fileReader = new FileReader();
+
+      var scrollBoxPosition = new Vector(18, 70);
+      var scrollPosition = Vector.zero();
+      var scrollWidth = 600;
+      var seqBoxPosition = new Vector(960, 16);
+      var seqBoxSize = new Vector(320, 120);
+      var seqBoxMode = false;
+
+      window.onbeforeunload = function () {
+        return "저장되지 않은 데이터는 사라집니다!\n정말로 진행하시겠습니까?";
+      };
+
+      function setCanvasSize(width, height) {
+        width = Math.max(width, 1280);
+        height = Math.max(height, 760);
+        width = Math.min(width, 1920);
+        height = Math.min(height, 1080);
+
+        var canvas = document.getElementById("neurowhai");
+        canvas.width = width;
+        canvas.height = height;
+
+        seqBoxSize.x = width - 976;
+        wrap.style.width = width + "px";
+        banner.style.width = width + "px";
+      }
+
+      function init() {
+        setCanvasSize(window.innerWidth - 32, window.innerHeight - 70);
+
+        var canvas = document.getElementById("neurowhai");
+
+        visibleLabelFile(false);
+        board = new Board(canvas);
+        graphics = new Graphics(board);
+        graphics.setFont("돋움", "11px");
+        g_mouse.init(window, canvas);
+        g_keyboard.init(window);
+
+        menu.style.left = canvas.offsetLeft + 16 + "px";
+        menu.style.top = canvas.offsetTop + 96 + "px";
+
+        seqPrevBox.style.left = canvas.offsetLeft + seqBoxPosition.x + "px";
+        seqPrevBox.style.top = canvas.offsetTop + seqBoxPosition.y + "px";
+        seqPrevBox.style.width = seqBoxSize.x + "px";
+        seqPrevBox.style.height = seqBoxSize.y + "px";
+
+        seqPrevBox.onfocus = function () {
+          seqBoxMode = true;
+        };
+
+        seqPrevBox.onchange = function () {
+          seqList.setOption(seqPrevBox.value);
+        };
+
+        sheetBox.style.left = canvas.offsetLeft + 16 + "px";
+        sheetBox.style.top = canvas.offsetTop + 150 + "px";
+        sheetBox.style.width = "1032px";
+        sheetBox.style.height = canvas.height - 160 + "px";
+
+        copyBox.style.left = sheetBox.style.left;
+        copyBox.style.top = sheetBox.style.top;
+        copyBox.style.width = sheetBox.style.width;
+        copyBox.style.height = sheetBox.style.height;
+
+        pasteBox.style.left = sheetBox.style.left;
+        pasteBox.style.top = sheetBox.style.top;
+        pasteBox.style.width = sheetBox.style.width;
+        pasteBox.style.height = sheetBox.style.height;
+
+        testSheet.position.set(1082, board.height - 110);
+
+        visualizer.position.set(
+          scrollBoxPosition.x + scrollWidth + 128,
+          scrollBoxPosition.y,
+        );
+        visualizer.size.set(76, 24);
+
+        seqList.init(16, 170, canvas.width - 16 * 2, canvas.height - 180);
+
+        seqList.whenOptionChanged = function () {
+          seqPrevBox.value = seqList.getOption();
+        };
+
+        seqList.whenCursorChanged = function (sender, targetBeat) {
+          if (player.onPlaying()) {
+            btnPlay.value = "Ⅱ";
+          }
+
+          playSequencer();
+          player.setCurrentTime((targetBeat * seqList.timePerBeat) / 1000);
+          seqList.restore();
+          seqPrevBox.value = seqList.getOption();
+        };
+
+        fileReader.onload = function () {
+          var sheet = fileReader.result;
+
+          // 사진의 이 지점에는 문자열 치환 코드가 있으나
+          // 정규식의 일부 문자가 판독되지 않습니다.
+          if (sheetBox.hidden) {
+            seqList.load(sheet);
+            seqPrevBox.value = seqList.getOption();
+          } else {
+            var sheetTitle = MusicList.getTitleFromSheet(sheet);
+            var goahead = true;
+
+            if (sheetTitle.length > 0) {
+              for (var s = 0; s < MusicList.getCount(); ++s) {
+                if (MusicList.getTitle(s) === sheetTitle) {
+                  if (
+                    !confirm(
+                      '"' +
+                        sheetTitle +
+                        '" 제목과 같은 곡이 이미 있습니다.\n불러오시겠습니까?',
+                    )
+                  ) {
+                    goahead = false;
+                  }
+                  break;
+                }
+              }
+            }
+
+            if (goahead) {
+              newMusic();
+              sheetBox.value = sheet;
+              saveSheet();
+            }
+          }
+        };
+
+        checkAuto.onchange = function () {
+          if (checkAuto.checked) {
+            checkLoop.checked = false;
+          }
+        };
+
+        checkLoop.onchange = function () {
+          if (checkLoop.checked) {
+            checkAuto.checked = false;
+          }
+        };
+
+        rangeVolume.onchange = function () {
+          player.setVolume(rangeVolume.valueAsNumber / 100.0);
+        };
+
+        rangeVolume.onmousemove = function () {
+          player.setVolume(rangeVolume.valueAsNumber / 100.0);
+        };
+
+        player.whenEnd = function () {
+          if (sheetBox.hidden) {
+            btnPlay.value = "▶";
+          } else if (checkAuto.checked) {
+            changeMusic(+1);
+            player.play(sheetBox.value);
+          } else if (checkLoop.checked) {
+            player.play(sheetBox.value);
+          } else {
+            btnPlay.value = "▶";
+          }
+        };
+
+        const droppane = document.querySelector(".droppane");
+
+        window.ondragenter = function (arg) {
+          if (arg.dataTransfer && arg.dataTransfer.items) {
+            for (const item of arg.dataTransfer.items) {
+              if (item.kind === "file" && item.type === "text/plain") {
+                arg.preventDefault();
+                droppane.style.display = "flex";
+                return;
+              }
+            }
+          }
+        };
+
+        window.ondragover = function (arg) {
+          arg.preventDefault();
+          arg.stopPropagation();
+          return false;
+        };
+
+        window.ondragleave = function (arg) {
+          arg.preventDefault();
+          arg.stopPropagation();
+
+          if (arg.target === droppane) {
+            droppane.style.display = null;
+          }
+
+          return false;
+        };
+
+        window.ondrop = function (arg) {
+          whenClickBtnStop();
+          arg.preventDefault();
+          arg.stopPropagation();
+
+          if (arg.dataTransfer && arg.dataTransfer.items) {
+            for (const item of arg.dataTransfer.items) {
+              if (item.kind === "file" && item.type === "text/plain") {
+                fileQueue.push(item.getAsFile());
+              }
+            }
+          }
+
+          droppane.style.display = null;
+          return false;
+        };
+
+        initDemo();
+        changeMusic(0);
+        update();
+      }
+
+      function initDemo() {
+        if (MusicList.getCount() <= 0) {
+          newMusic();
+          sheetBox.value = bokuNoFriend;
+          saveSheet();
+        }
+      }
+
+      function update() {
+        board.update();
+        g_mouse.update();
+        g_keyboard.update();
+        updateFileQueue();
+        player.update();
+
+        if (!sheetBox.hidden) {
+          testSheet.update();
+        }
+
+        if (g_mouse.onDown()) {
+          var cursor = g_mouse.getCursor();
+
+          // 스크롤 위치 변경
+          if (
+            cursor.x >= scrollBoxPosition.x &&
+            cursor.x <= scrollBoxPosition.x + scrollWidth &&
+            cursor.y > scrollBoxPosition.y - 8 &&
+            cursor.y < scrollBoxPosition.y + 8
+          ) {
+            var pos = (cursor.x - scrollBoxPosition.x) / scrollWidth;
+
+            player.setCurrentTime(pos * player.getDuration());
+          }
+
+          // 시각화 정보 조정
+          if (
+            cursor.x > visualizer.position.x &&
+            cursor.x < visualizer.position.x + visualizer.size.x &&
+            cursor.y > visualizer.position.y - visualizer.size.y / 2 &&
+            cursor.y < visualizer.position.y + visualizer.size.y / 2
+          ) {
+            visualizer.fftMode = !visualizer.fftMode;
+          }
+
+          // 시퀀서 설정 박스 클릭 여부 확인
+          if (sheetBox.hidden) {
+            if (
+              cursor.x >= seqBoxPosition.x &&
+              cursor.x < seqBoxPosition.x + seqBoxSize.x &&
+              cursor.y > seqBoxPosition.y &&
+              cursor.y < seqBoxPosition.y + seqBoxSize.y
+            ) {
+              seqBoxMode = true;
+            } else {
+              seqBoxMode = false;
+              copyBox.hidden = true;
+            }
+          }
+        }
+
+        // 시퀀서 변경
+        if (seqBoxMode === false && g_keyboard.onPressed(Keys.Shift)) {
+          for (var i = 0; i <= 9; ++i) {
+            if (
+              g_keyboard.onDown(
+                Keys[String.fromCharCode("0".charCodeAt(0) + i)],
+              )
+            ) {
+              var num = i - 1;
+              if (num < 0) num = 9;
+              changeSequencer(num);
+              break;
+            }
+          }
+        }
+
+        // 복사용 상자 숨기기
+        if (g_keyboard.onDown(Keys.Escape)) {
+          copyBox.hidden = true;
+          pasteBox.hidden = true;
+        }
+
+        // 시각화 정보 갱신
+        if (player.originMusic !== null) {
+          var index = Math.floor(player.getCurrentTime() * 44100);
+          var buffer = player.originMusic.getBuffer();
+          visualizer.update(buffer, index);
+        }
+
+        if (sheetBox.hidden) {
+          seqList.setMusicTime(player.getCurrentTime(), player.onPlaying());
+
+          if (seqBoxMode === false) {
+            seqList.update();
+          }
+        }
+
+        // 스크롤 위치 계산
+        scrollPosition.set(
+          scrollBoxPosition.x +
+            (player.getCurrentTime() * scrollWidth) / player.getDuration(),
+          scrollBoxPosition.y,
+        );
+
+        board.reset();
+        graphics.reset(board);
+        render(graphics);
+        window.requestAnimationFrame(update);
+      }
+
+      function render(g) {
+        g.clear("white");
+
+        if (sheetBox.hidden) {
+          seqList.render(g);
+        }
+
+        // 스크롤 배경
+        g.beginDrawLine("rgb(220, 220, 220)", 6);
+        g.drawLine(
+          scrollBoxPosition.x,
+          scrollBoxPosition.y,
+          scrollBoxPosition.x + scrollWidth,
+          scrollBoxPosition.y,
+        );
+        g.endDrawLine();
+
+        // 스크롤 진행량
+        g.beginDrawLine("rgb(39, 155, 109)", 6);
+        g.drawLine(
+          scrollBoxPosition.x,
+          scrollBoxPosition.y,
+          scrollBoxPosition.x +
+            (player.getCurrentTime() * scrollWidth) / player.getDuration(),
+          scrollBoxPosition.y,
+        );
+        g.endDrawLine();
+
+        // 스크롤 바
+        g.beginFillCircle("rgb(39, 155, 109)");
+        g.fillCircle(scrollPosition.x, scrollPosition.y, 2);
+        g.endFillCircle();
+
+        // 스크롤 사이드
+        g.beginDrawLine("black", 4);
+        g.drawLine(
+          scrollBoxPosition.x,
+          scrollBoxPosition.y - 8,
+          scrollBoxPosition.x,
+          scrollBoxPosition.y + 8,
+        );
+        g.drawLine(
+          scrollBoxPosition.x + scrollWidth,
+          scrollBoxPosition.y - 8,
+          scrollBoxPosition.x + scrollWidth,
+          scrollBoxPosition.y + 8,
+        );
+        g.endDrawLine();
+
+        // 재생 시간
+        g.beginDrawText("black", "14px");
+        g.drawText(
+          formatTime(player.getCurrentTime()) +
+            " / " +
+            formatTime(player.getDuration()),
+          scrollBoxPosition.x + scrollWidth + 16,
+          scrollBoxPosition.y + 6,
+        );
+        g.endDrawText();
+
+        // 시각화 정보
+        visualizer.render(g);
+
+        // 곡명
+        g.beginDrawText("black", "24px");
+        g.drawText(musicTitle, 16, 40);
+        g.endDrawText();
+
+        // 테스트 시트
+        if (!sheetBox.hidden) {
+          testSheet.render(g);
+        }
+      }
+
+      function updateFileQueue() {
+        if (
+          fileQueue.length > 0 &&
+          fileReader.readyState !== fileReader.LOADING
+        ) {
+          var file = fileQueue.shift();
+          fileReader.readAsText(file);
+        }
+      }
+
+      function whenClickBtnFold() {
+        whenClickBtnStop();
+        sheetBox.hidden = !sheetBox.hidden;
+        visibleLabelFile(false);
+
+        if (sheetBox.hidden) {
+          saveSheet();
+          btnFold.value = "Code";
+          btnNew.value = "Clear";
+          checkAuto.hidden = true;
+          checkLoop.hidden = true;
+          lbCheckAuto.hidden = true;
+          lbCheckLoop.hidden = true;
+          checkAll.hidden = false;
+          lbCheckAll.hidden = false;
+          seqPrevBox.hidden = false;
+          musicTitle = "Sequencer";
+        } else {
+          btnFold.value = "Seq";
+          btnNew.value = "New";
+          checkAuto.hidden = false;
+          checkLoop.hidden = false;
+          lbCheckAuto.hidden = false;
+          lbCheckLoop.hidden = false;
+          checkAll.hidden = true;
+          lbCheckAll.hidden = true;
+          seqPrevBox.hidden = true;
+          copyBox.hidden = true;
+          pasteBox.hidden = true;
+          musicTitle = MusicList.getTitleFromSheet(sheetBox.value);
+        }
+      }
+
+      function whenClickBtnPlay() {
+        if (player.onPlaying()) {
+          btnPlay.value = "▶";
+          player.pause();
+        } else {
+          btnPlay.value = "Ⅱ";
+
+          if (sheetBox.hidden) {
+            playSequencer();
+          } else {
+            saveSheet();
+            playCode();
+          }
+        }
+      }
+
+      function whenClickBtnStop() {
+        player.stop();
+        btnPlay.value = "▶";
+      }
+
+      function whenClickBtnPrev() {
+        if (sheetBox.hidden) {
+          changeSequencer(seqList.currentSeq - 1);
+        } else {
+          changeMusic(-1);
+        }
+      }
+
+      function whenClickBtnNext() {
+        if (sheetBox.hidden) {
+          changeSequencer(seqList.currentSeq + 1);
+        } else {
+          changeMusic(+1);
+        }
+      }
+
+      function whenClickBtnNew() {
+        if (sheetBox.hidden) {
+          whenClickBtnStop();
+          copyBox.hidden = true;
+          pasteBox.hidden = true;
+          seqList.clear();
+        } else {
+          newMusic();
+        }
+      }
+
+      function whenClickBtnSave() {
+        if (sheetBox.hidden) {
+          var sheetText = seqList.build();
+          sheetText = sheetText.replace(/\w+/g, "+");
+          seqList.backup();
+
+          if (g_keyboard.onPressed(Keys.Shift)) {
+            downloadData(sheetText, "code.text");
+          } else {
+            showCopyBox("Ctrl+C를 눌러 복사하세요.\n\n", sheetText);
+          }
+        } else {
+          if (g_keyboard.onPressed(Keys.Shift)) {
+            downloadData(sheetBox.value, "code.text");
+          } else {
+            saveSheet();
+          }
+        }
+      }
+
+      function whenClickBtnLoad() {
+        whenClickBtnStop();
+
+        if (sheetBox.hidden) {
+          if (g_keyboard.onPressed(Keys.Shift)) {
+            visibleLabelFile(true);
+          } else {
+            visibleLabelFile(false);
+            showPasteBox("Ctrl+V를 눌러 붙여 넣으세요.\n\n", function (sheet) {
+              // 사진의 정규식 치환 부분은 판독 불가
+              seqList.load(sheet);
+              seqPrevBox.value = seqList.getOption();
+              g_keyboard.reset();
+            });
+          }
+        } else {
+          visibleLabelFile(lbFile.style.display === "none");
+        }
+      }
+
+      function whenSelectFiles() {
+        for (var i = 0; i < dlgFile.files.length; ++i) {
+          fileQueue.push(dlgFile.files[i]);
+        }
+
+        dlgFile.value = "";
+        visibleLabelFile(false);
+        g_keyboard.reset();
+      }
+
+      function whenClickDlg() {
+        visibleLabelFile(false);
+      }
+
+      function visibleLabelFile(visible) {
+        if (visible) {
+          lbFile.style.display = "inline-block";
+        } else {
+          lbFile.style.display = "none";
+        }
+      }
+
+      function changeSequencer(num) {
+        if (num < 0) {
+          num = seqList.seq.length - 1;
+        } else if (num >= seqList.seq.length) {
+          num = 0;
+        }
+
+        seqList.setOption(seqPrevBox.value);
+        seqList.changeSequencer(num);
+        seqPrevBox.value = seqList.getOption();
+      }
+
+      function showCopyBox(description, content) {
+        copyBox.value = description + content;
+        copyBox.hidden = false;
+        copyBox.select();
+        copyBox.selectionStart = description.length;
+
+        copyBox.oncopy = function (e) {
+          e.clipboardData.setData("text/plain", content);
+          copyBox.hidden = true;
+          e.preventDefault();
+        };
+
+        copyBox.oncut = copyBox.oncopy;
+      }
+
+      function showPasteBox(description, callback) {
+        pasteBox.value = description + " ";
+        pasteBox.hidden = false;
+        pasteBox.select();
+        pasteBox.selectionStart = description.length;
+
+        pasteBox.onpaste = function (e) {
+          var sheet = e.clipboardData.getData("text/plain");
+
+          pasteBox.hidden = true;
+          e.preventDefault();
+
+          if (sheet) {
+            callback(sheet);
+          }
+        };
+      }
+
+      function playCode() {
+        musicTitle = MusicList.getTitleFromSheet(sheetBox.value);
+        player.play(sheetBox.value);
+      }
+
+      function playSequencer() {
+        musicTitle = "Sequencer";
+        var music = seqList.makeSound(checkAll.checked);
+        player.playSound(music);
+      }
+
+      function changeMusic(move) {
+        if (move !== 0) {
+          saveSheet();
+        }
+
+        var musicCount = MusicList.getCount();
+        musicIndex += move;
+
+        if (musicIndex < 0) {
+          musicIndex = musicCount - 1;
+        } else if (musicIndex >= musicCount) {
+          musicIndex = 0;
+        }
+
+        sheetBox.value = MusicList.getSheet(musicIndex);
+        musicTitle = MusicList.getTitleFromSheet(sheetBox.value);
+
+        if (musicTitle.length <= 0) {
+          musicTitle = "Untitled";
+        }
+      }
+
+      function saveSheet() {
+        var sheet = sheetBox.value;
+
+        if (sheet.trim().length > 0) {
+          MusicList.saveSheet(musicIndex, sheet);
+          musicTitle = MusicList.getTitleFromSheet(sheet);
+        }
+      }
+
+      function newMusic() {
+        saveSheet();
+
+        var musicCount = MusicList.getCount();
+        var targetIndex = musicCount;
+
+        for (var i = 0; i < musicCount; ++i) {
+          if (MusicList.getSheet(i).trim().length <= 0) {
+            targetIndex = i;
+            break;
+          }
+        }
+
+        musicIndex = targetIndex;
+        MusicList.saveSheet(targetIndex, "");
+        sheetBox.value = "";
+        musicTitle = "Untitled";
+      }
+
+      function formatTime(time) {
+        var minutes = Math.floor(time / 60);
+        var seconds = Math.floor(time - minutes * 60);
+
+        return formatInt(minutes, 2, "0") + ":" + formatInt(seconds, 2, "0");
+      }
+
+      function downloadData(data, fileName) {
+        var a = document.createElement("a");
+        document.body.appendChild(a);
+        a.style.display = "none";
+
+        var blob = new Blob([data], { type: "octet/stream" });
+        var url = window.URL.createObjectURL(blob);
+
+        a.href = url;
+        a.download = fileName;
+        a.click();
+
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      }
+    </script>
   </head>
-  <body></body>
+
+  <body onload="init()">
+    <div class="droppane">파일을 끌어다 놓으세요.</div>
+
+    <div class="wrap" id="wrap">
+      <div class="banner" id="banner">
+        <b>♬</b>&nbsp;
+        <label class="titleLabel">ROKAF</label>
+        Wave Player
+      </div>
+
+      <canvas id="neurowhai" width="1280" height="760">
+        지원하지 않는 브라우저입니다.
+      </canvas>
+
+      <div class="menu" id="menu">
+        <input
+          type="button"
+          id="btnFold"
+          value="Seq"
+          onclick="whenClickBtnFold()"
+        />
+
+        <input
+          type="button"
+          id="btnNew"
+          value="New"
+          onclick="whenClickBtnNew()"
+        />
+
+        <input
+          type="button"
+          id="btnSave"
+          value="Save"
+          onclick="whenClickBtnSave()"
+        />
+
+        <input
+          type="button"
+          id="btnLoad"
+          value="Load"
+          onclick="whenClickBtnLoad()"
+        />
+
+        <div class="filebox">
+          <label for="dlgFile" id="lbFile"> 파일 선택 </label>
+
+          <input
+            type="file"
+            id="dlgFile"
+            accept="text/plain"
+            multiple
+            onchange="whenSelectFiles()"
+            onclick="whenClickDlg()"
+          />
+        </div>
+
+        <input
+          type="button"
+          id="btnPrev"
+          value="|◀"
+          onclick="whenClickBtnPrev()"
+        />
+
+        <input
+          type="button"
+          id="btnNext"
+          value="▶|"
+          onclick="whenClickBtnNext()"
+        />
+
+        <input
+          type="button"
+          id="btnPlay"
+          value="▶"
+          onclick="whenClickBtnPlay()"
+        />
+
+        <input
+          type="button"
+          id="btnStop"
+          value="■"
+          onclick="whenClickBtnStop()"
+        />
+
+        <input type="checkbox" id="checkAuto" />
+        <label for="checkAuto" id="lbCheckAuto"> 연속 재생 </label>
+
+        <input type="checkbox" id="checkLoop" />
+        <label for="checkLoop" id="lbCheckLoop"> 반복 재생 </label>
+
+        <input type="checkbox" id="checkAll" hidden />
+        <label for="checkAll" id="lbCheckAll" hidden> 동시 재생 </label>
+
+        <label for="rangeVolume"> 음량 </label>
+        <input
+          type="range"
+          id="rangeVolume"
+          min="0"
+          max="100"
+          value="100"
+          step="1"
+          style="width: 80px"
+        />
+      </div>
+
+      <textarea id="seqPrevBox" hidden></textarea>
+      <textarea id="sheetBox"></textarea>
+      <textarea id="copyBox" hidden></textarea>
+      <textarea id="pasteBox" hidden></textarea>
+    </div>
+  </body>
 </html>
