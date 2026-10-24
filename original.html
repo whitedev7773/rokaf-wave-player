@@ -176,6 +176,8 @@ v4 c4는 c0과 동일합니다.
   볼륨 조절하면 됩니다.
 - 반복 : {2 c4 1 0}은 c4 1 0 c4 1 0과 동일합니다.
   이를 이용해 원하는 시점에 반복을 초기화할 수 있습니다.
+- 음별 강약 : c4/80 e4/110 4 0처럼 음 뒤의 /0~127로
+  각 음의 MIDI 강약을 지정할 수 있습니다.
 
 <설정>
 - 악보 입력란의 글자 크기가 마음에 안 들면 CSS에서
@@ -192,6 +194,14 @@ saw: 톱니파
 noise: 노이즈 파형
 low, high: 패스 필터
 feedback: 피드백
+
+<피아노에 가까운 음색 예시 - 악보 코드만 사용>
+- Main
+~sin1:1 +sin1.002:0.18 +sin2.003:0.32 +sin3.009:0.13 +sin4.018:0.07 +sin5.03:0.035
+!a3 !d500 !s10 !r180
+*bpm120
+c4 e4 g4 4 4
+실제 피아노 녹음은 아니며 사인파 배음과 ADSR로 만든 음색입니다.
 
 파형/연산 정의 :=
   &{이름}:{종류}:{주파수}
@@ -286,7 +296,7 @@ R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지�
     <title>Wave Player</title>
     <style type="text/css">
       textarea {
-        position: fixed;
+        position: absolute;
         padding: 4px;
         margin: 0px;
         resize: none;
@@ -342,13 +352,14 @@ R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지�
         margin: 0;
         font-size: 16px/18px;
         font-family: Arial, Helvetica, sans-serif;
-        padding: 0px 90px 0px 0px;
-        overflow: hidden;
+        padding: 0;
+        overflow: auto;
       }
       * {
         box-sizing: border-box;
       }
       .wrap {
+        position: relative;
         width: 1280px;
         background: rgb(5, 5, 5);
         color: white;
@@ -361,7 +372,8 @@ R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지�
         color: lightgreen;
       }
       .menu {
-        position: fixed;
+        position: absolute;
+        color: #111;
         padding: 0px;
         margin: 0px;
       }
@@ -663,8 +675,9 @@ R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지�
       };
       // ##########################################################
       Mouse.prototype.calculateCursorFrom = function (arg) {
-        this.cursor.x = arg.x - this.client.offsetLeft;
-        this.cursor.y = arg.y - this.client.offsetTop;
+        var bounds = this.client.getBoundingClientRect();
+        this.cursor.x = arg.clientX - bounds.left;
+        this.cursor.y = arg.clientY - bounds.top;
       };
       Mouse.prototype.whenDown = function (arg) {
         this.backBuffer = this.DOWN;
@@ -1242,7 +1255,7 @@ R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지�
       // color: string
       // size: {}px
       Graphics.prototype.beginDrawText = function (color, size) {
-        this.setDrawColor(color);
+        this.setFillColor(color);
         this.setFont(this.context.font.split(" ")[1], size);
       };
       Graphics.prototype.endDrawText = function () {
@@ -1823,8 +1836,8 @@ R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지�
       };
       MusicList.saveSheet = function (index, sheet) {
         var key = MusicList.Keys.Sheet + index;
-        if (g_db.contains(key)) {
-          g_db.set(MusicList.Keys.Count, MusicList.getCount() + 1);
+        if (index >= MusicList.getCount()) {
+          g_db.set(MusicList.Keys.Count, index + 1);
         }
         g_db.set(key, sheet);
       };
@@ -1849,7 +1862,7 @@ R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지�
             this.parents[i].calculate(time, baseFreq, offset, loopCheck) *
             this.scales[i];
         }
-        return sum / this.parents.length;
+        return sum;
       };
       OpNodeConv.prototype.getFrequency = function (baseFreq) {
         if (this.parents.length <= 0) {
@@ -1904,12 +1917,12 @@ R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지�
         }
         return this.modulator.getFrequency(baseFreq);
       };
-      OpNodeMod.reset = function (loopCheck) {
+      OpNodeMod.prototype.reset = function (loopCheck) {
         loopCheck = loopCheck || [];
         if (loopCheck.indexOf(this) < 0) {
           loopCheck.push(this);
           this.prevOutput = 0;
-          if (this.modulator !== null && this.modulator.resset) {
+          if (this.modulator !== null && this.modulator.reset) {
             this.modulator.reset();
           }
           for (var i = 0; i < this.parents.length; ++i) {
@@ -2280,7 +2293,7 @@ R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지�
       }
       function MusicMaker() {}
       MusicMaker.noteNameIndex = {
-        C: 0,
+        c: 0,
         d: 2,
         e: 4,
         f: 5,
@@ -2455,21 +2468,32 @@ R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지�
               topNode.parents.push(newNode);
               opStack.push(newNode);
             } else if (sheetText[i] == "]") {
-              if (opStack.length <= 1) {
-                paragraph.push("{" + opList.length + "}");
+              opStack.pop();
+              if (opStack.length == 0) {
+                paragraph.push("m" + opList.length);
                 opList.push(topNode);
-                opStack.pop();
               }
             } else {
               topNode.token += sheetText[i];
             }
           } else if (sheetText[i] == "[") {
-            // 새 노드 문법 진입
-            appendToken(paragraph, token);
-            token = "";
-            opStack.push(new OpNodeParser());
-          } else if (sheetText[i] == "~") {
-            // 문단(채널) 구분
+            var adsrToken = sheetText.substring(i).match(/^\[([adsr])\]([0-9]+(?:\.[0-9]+)?)/);
+            if (adsrToken) {
+              appendToken(paragraph, token);
+              token = "";
+              paragraph.push("!" + adsrToken[1] + adsrToken[2]);
+              i += adsrToken[0].length - 1;
+            } else {
+              // 새 노드 문법 진입
+              appendToken(paragraph, token);
+              token = "";
+              opStack.push(new OpNodeParser());
+            }
+          } else if (
+            sheetText[i] == "-" &&
+            (i == 0 || sheetText[i - 1] == "\n")
+          ) {
+            // 채널 선언
             appendToken(paragraph, token);
             token = "";
             if (paragraph.length > 0) {
@@ -2484,11 +2508,21 @@ R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지�
             // 여러줄 주석
             doSkip = true;
             endChar = ">";
-          } else if (",\r\n\t".indexOf(sheetText[i]) >= 0) {
+          } else if (sheetText[i] == "{" || sheetText[i] == "(") {
+            // 반복 구문의 여는 괄호
+            appendToken(paragraph, token);
+            token = "(";
+            doSkipSpace = true;
+          } else if (sheetText[i] == "}" || sheetText[i] == ")") {
+            // 반복 구문의 닫는 괄호
+            appendToken(paragraph, token);
+            token = "";
+            paragraph.push(")");
+          } else if (", \r\n\t".indexOf(sheetText[i]) >= 0) {
             // 토큰 분리
             appendToken(paragraph, token);
             token = "";
-          } else if ("(*|~+%&".indexOf(sheetText[i]) >= 0) {
+          } else if ("*|~+%&!".indexOf(sheetText[i]) >= 0) {
             // 토큰 분리 및 후행 공백 무시
             appendToken(paragraph, token);
             token = sheetText[i];
@@ -2529,6 +2563,14 @@ R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지�
         var opMap = new Map();
         let notes = {};
         let substitute = new Map();
+        var defineOp = function (items) {
+          var op = MusicMaker.createOp(items);
+          if (op === null) return;
+          var key = items[0];
+          while (opMap.has(key)) key = items[0] + makeName();
+          substitute.set(items[0], key);
+          opMap.set(key, op);
+        };
         // 인터프리터
         for (var s = 0; s < sheetList.length; ++s) {
           var sheet = sheetList[s];
@@ -2546,6 +2588,7 @@ R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지�
           var rawWaveKey = "+sin1:1+sin2:0.5+sin3:0.25+sin4:0.125";
           var prevDelay = 0;
           var currentScales = [];
+          var currentVelocities = [];
           var volume = 1.0;
           var channelVolume = 1.0;
           var loopStack = [];
@@ -2570,13 +2613,7 @@ R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지�
             } else if (cmd == "&") {
               // 파형 선언
               var items = token.substr(1, token.length - 1).split(":");
-              var op = MusicMaker.createOp(items, opMap);
-              if (op !== null) {
-                let key = items[0];
-                while (substitute.has(key)) key = items[0] + makeName();
-                substitute.set(items[0], key);
-                opMap.set(key, op);
-              }
+              defineOp(items);
               if (opCallBack) {
                 opCallBack(s, token);
               }
@@ -2597,7 +2634,13 @@ R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지�
               }
               var info = token.split(":");
               var waveName = info[0].substring(1, info[0].length).trim();
-              var waveVolume = info.length >= 2 ? parseFloat(info[1]) : 1;
+              if (info.length >= 3 && isNaN(Number(info[1]))) {
+                defineOp([waveName, info[1], info[2]]);
+              }
+              var waveVolume =
+                info.length >= 2 && !(info.length >= 3 && isNaN(Number(info[1])))
+                  ? parseFloat(info[1])
+                  : 1;
               rawWaveKey += "+" + waveName + ":" + waveVolume;
               if (substitute.has(waveName)) waveName = substitute.get(waveName);
               else {
@@ -2636,9 +2679,9 @@ R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지�
                   if (adsrIndex == 2 && adsr[adsrIndex] > 100) {
                     adsr[adsrIndex] = 100;
                   }
+                } else {
+                  volume = parseFloat(token.substr(1));
                 }
-              } else {
-                volume = parseFloat(token.substr(1, token.length - 1));
               }
               if (volume < 0.0) {
                 volume = 0.0;
@@ -2732,17 +2775,11 @@ R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지�
               // 지연
               var data = token.split(":");
               var timespan = (parseFloat(data[0]) * speed) / 1000.0;
-              var delay = data.length >= 2 ? parseFloat(data[1]) : 0;
+              var delay = data.length >= 2 ? parseFloat(data[1].replace(/^_/, "-")) : 0;
               delay = (delay * speed) / 1000.0;
               var afterDelay = 0;
               if (data.length >= 3) {
-                if (data[2][0] == "-") {
-                  afterDelay = -parseFloat(
-                    data[2].substr(1, data[2].length - 1),
-                  );
-                } else {
-                  afterDelay = parseFloat(data[2]);
-                }
+                afterDelay = parseFloat(data[2].replace(/^_/, "-"));
                 afterDelay = (afterDelay * speed) / 1000.0;
               }
               if (timespan < 0.000001) {
@@ -2765,7 +2802,7 @@ R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지�
                     callBack(
                       s,
                       channelVolume,
-                      volume,
+                      volume * currentVelocities[i],
                       speed,
                       isBpm,
                       bpm,
@@ -2783,7 +2820,7 @@ R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지�
                       length: timespan,
                       full: timespan + adsr[3] / 1000,
                       clock: Math.round(44100 * timePos),
-                      volume: realVolume,
+                      volume: realVolume * currentVelocities[i],
                       attack: adsr[0],
                       decay: adsr[1],
                       sustain: adsr[2],
@@ -2796,6 +2833,8 @@ R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지�
                     timespan = 1.0 / 44100;
                   }
                 }
+                currentScales = [];
+                currentVelocities = [];
               } else {
                 // 순수 지연
                 time += timespan;
@@ -2804,9 +2843,14 @@ R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지�
               // 음
               var noteInfo = token.split(":");
               if (noteInfo.length <= 1) {
-                var scale = MusicMaker.noteNameToScale(token);
+                var pitchAndVelocity = token.split("/");
+                var velocity = pitchAndVelocity.length > 1
+                  ? Math.max(0, Math.min(127, Number(pitchAndVelocity[1]))) / 127
+                  : 1;
+                var scale = MusicMaker.noteNameToScale(pitchAndVelocity[0]);
                 scale = Math.max(scale + octaveOffset * 12, 0);
                 currentScales.push(scale);
+                currentVelocities.push(Number.isFinite(velocity) ? velocity : 1);
               } else if (t + 1 < sheet.length && isNum(sheet[t + 1][0])) {
                 // 쓸기
                 var isSweep = true;
@@ -2923,13 +2967,11 @@ R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지�
                     }
                   } else {
                     currentScales.push(scale);
+                    currentVelocities.push(1);
                   }
                   sweepTime += delay;
                   scale += scaleMove;
                 }
-              }
-              if (cmd < "a" || cmd > "g") {
-                currentScales = [];
               }
             }
           }
@@ -2943,10 +2985,9 @@ R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지�
           if (a.sustain != b.sustain) return a.sustain - b.sustain;
           return a.release - b.release;
         };
+        const pcm = [0];
         for (const w in notes) {
           notes[w].sort(cmp);
-          const pcm = [0];
-          for (const w in notes) {
             const arr = notes[w];
             let beforeAdsr = null;
             let afterAdsr = null;
@@ -3005,13 +3046,12 @@ R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지�
               for (let j = 0; j < afterAdsr.length; j++)
                 pcm[j + arr[i].clock] += afterAdsr[j] * arr[i].volume;
             }
-          }
-          // 정규화
-          let maxVolume = 1;
-          for (const i of pcm) maxVolume = Math.max(maxVolume, Math.abs(i));
-          for (var i = 0; i < pcm.length; ++i) pcm[i] /= maxVolume;
-          return new MusicResult(Sound.fromPcm(pcm, 44100), startTime, speed);
         }
+        // 정규화
+        let maxVolume = 1;
+        for (const sample of pcm) maxVolume = Math.max(maxVolume, Math.abs(sample));
+        for (var i = 0; i < pcm.length; ++i) pcm[i] /= maxVolume;
+        return new MusicResult(Sound.fromPcm(pcm, 44100), startTime, speed);
       };
       MusicMaker.applyAdsr = function (
         src,
@@ -3327,11 +3367,7 @@ R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지�
         this.offset = 0;
       };
       MusicPlayer.prototype.play = function (sheet) {
-        var result = this.load(
-          sheet
-            .replace(/(\+HIW<더하기W>)|W<플러스W>|W<PLUSW>|W\[PLUSW\]/g, "+")
-            .replace(/(%W<퍼센트W>|W[퍼센트W])/g, "%"),
-        );
+        var result = this.load(sheet);
         this.playing = true;
         this.music.setVolume(this.volume);
         this.music.play();
@@ -4931,111 +4967,60 @@ R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지�
         }
       };
       Sequencer.prototype.build = function () {
-        var BEAT_PER_LINE = Math.max(
-          this.beatPerPhase,
-          4 * (4 - (Math.round(this.beatPerPhase / 4) % 2)),
-        );
-        var sheet = "|" + this.volumeSeq.volumes[0].volume + "w\r\n";
-        var indices = new Array(this.lines.length);
-        for (var i = 0; i < indices.length; ++i) {
-          indices[i] = 0;
+        var events = [];
+        for (var scale = 0; scale < this.lines.length; ++scale) {
+          for (var i = 0; i < this.lines[scale].length; ++i) {
+            var note = this.lines[scale][i];
+            events.push({
+              time: note.time,
+              beat: note.beat,
+              name:
+                this.indexToName[scale % 12] +
+                (Math.floor(scale / 12) + this.minOctave),
+            });
+          }
         }
+        events.sort(function (a, b) {
+          return a.time - b.time || a.beat - b.beat || a.name.localeCompare(b.name);
+        });
+        var sheet = "!" + round2(this.volumeSeq.volumes[0].volume, 4) + "\n";
         var time = 0;
-        var isEnd = false;
-        var maxEndDelay = 0;
-        var lineGage = 0;
-        var lineNum = 1;
         var nextVolumeIndex = 1;
-        sheet += "w\r\n$" + lineNum + "w\r\n";
-        while (!isEnd) {
-          isEnd = true;
-          var minTime = -1;
-          var minNotes = [];
-          for (var i = 0; i < indices.length; ++i) {
-            var n = indices[i];
-            if (n >= this.lines[i].length) {
-              continue;
-            }
-            isEnd = false;
-            var note = this.lines[i][n];
-            if (
-              note.time < minTime &&
-              Math.abs(note.time - minTime) > 0.000001
-            ) {
-              minNotes = [];
-            }
-            if (
-              minTime < 0 ||
-              note.time < minTime ||
-              Math.abs(note.time - minTime) < 0.000001
-            ) {
-              minTime = note.time;
-              minNotes.push(i);
-            }
+        for (var index = 0; index < events.length; ) {
+          var noteTime = events[index].time;
+          if (noteTime > time + 0.000001) {
+            sheet += round2(noteTime - time, 6) + " ";
+            time = noteTime;
           }
-          if (isEnd) {
-            break;
-          }
-          var delay = minTime - time;
-          time = minTime;
-          lineGage += delay;
-          if (delay > 0) {
-            sheet += " " + round2(delay, 6);
-          }
-          // 개행 삽입
-          if (lineGage >= BEAT_PER_LINE) {
-            while (lineGage >= BEAT_PER_LINE) {
-              lineGage -= BEAT_PER_LINE;
-              sheet += "w\r\n";
-              lineNum += 1;
-              if (lineNum % 5 == 1) {
-                sheet += "w\r\n$ " + lineNum + "w\r\n";
-              }
-            }
-          } else if (delay > 0) {
-            sheet += " ";
-          }
-          // 볼륨 확인
-          if (
+          while (
             nextVolumeIndex < this.volumeSeq.volumes.length &&
-            time > this.volumeSeq.volumes[nextVolumeIndex].time - 0.000001
+            this.volumeSeq.volumes[nextVolumeIndex].time <= noteTime + 0.000001
           ) {
             sheet +=
               "!" +
               round2(this.volumeSeq.volumes[nextVolumeIndex].volume, 4) +
               " ";
-            nextVolumeIndex += 1;
+            nextVolumeIndex++;
           }
-          var noteMap = new Map();
-          for (var i = 0; i < minNotes.length; ++i) {
-            var idx = minNotes[i];
-            var note = this.lines[idx][indices[idx]];
-            var name = this.indexToName[idx % 12];
-            var octave = Math.floor(idx / 12) + this.minOctave;
-            var noteText = name + octave;
-            if (noteMap.has(note.beat)) {
-              noteMap.get(note.beat).push(noteText);
-            } else {
-              noteMap.set(note.beat, [noteText]);
-            }
-            indices[idx] += 1;
+          var groupEnd = index;
+          while (
+            groupEnd < events.length &&
+            Math.abs(events[groupEnd].time - noteTime) < 0.000001
+          ) {
+            groupEnd++;
           }
-          if (noteMap.size > 0) {
-            maxEndDelay = 0;
-            // 노트 기록과 동시에 가장 긴 비트를 찾음
-            noteMap.forEach(function (noteList, beat) {
-              for (var i = 0; i < noteList.length; ++i) {
-                sheet += noteList[i] + ":";
-              }
-              sheet += round2(beat, 6) + ":";
-              if (beat > maxEndDelay) {
-                maxEndDelay = beat;
-              }
-            });
-            sheet += "" + round2(maxEndDelay, 6);
+          var groups = new Map();
+          for (var j = index; j < groupEnd; ++j) {
+            var beat = round2(events[j].beat, 6);
+            if (!groups.has(beat)) groups.set(beat, []);
+            groups.get(beat).push(events[j].name);
           }
+          groups.forEach(function (names, beat) {
+            sheet += names.join(" ") + " " + beat + " ";
+          });
+          index = groupEnd;
         }
-        return sheet;
+        return sheet.trim();
       };
       Sequencer.prototype.appendNote = function (time, scale, span) {
         scale = scale - this.minOctave * 12;
@@ -5945,7 +5930,7 @@ R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지�
             }
             beginOpParagraph = paragraph + 1;
             seqOption +=
-              "~" + wave.substring(1, wave.length).replace(/\w+/gm, "+") + "\n";
+              "~" + wave.substring(1, wave.length) + "\n";
             seqOption +=
               "!a" +
               adsr[0] +
@@ -6044,25 +6029,22 @@ R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지�
         this.size = new Vector(128, 64);
         this.buffer = new Array(2048);
         this.fftData = new Array(this.buffer.length);
-        for (var i = 0; i < this.fftLength; ++i) {
+        for (var i = 0; i < this.buffer.length; ++i) {
           this.buffer[i] = 0;
           this.fftData[i] = 0;
         }
         this.fftMode = true;
       }
       MusicVisualizer.prototype.update = function (musicBuffer, offset) {
-        if (
-          buffer.length >= this.buffer.length &&
-          offset < musicBuffer.length
-        ) {
+        if (musicBuffer.length > 0 && offset < musicBuffer.length) {
           for (var i = 0; i < this.buffer.length; ++i) {
-            var target = musicBuffer[offset - this.buffer.length + i];
+            var target = musicBuffer[offset - this.buffer.length + i] || 0;
             this.buffer[i] = target;
             this.fftData[i] = target;
           }
           // FFT 수행
           if (this.fftMode) {
-            this.fftData = this.fft(this.fftData);
+            this.fftData = this.dft(this.fftData);
           }
         }
       };
@@ -6446,7 +6428,9 @@ R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지�
             cursor.y < scrollBoxPosition.y + 8
           ) {
             var pos = (cursor.x - scrollBoxPosition.x) / scrollWidth;
-
+            if (!player.onPlaying()) {
+              whenClickBtnPlay();
+            }
             player.setCurrentTime(pos * player.getDuration());
           }
 
@@ -6514,9 +6498,10 @@ R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지�
         }
 
         // 스크롤 위치 계산
+        var duration = player.getDuration();
         scrollPosition.set(
           scrollBoxPosition.x +
-            (player.getCurrentTime() * scrollWidth) / player.getDuration(),
+            (duration > 0 ? (player.getCurrentTime() * scrollWidth) / duration : 0),
           scrollBoxPosition.y,
         );
 
@@ -6549,7 +6534,9 @@ R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지�
           scrollBoxPosition.x,
           scrollBoxPosition.y,
           scrollBoxPosition.x +
-            (player.getCurrentTime() * scrollWidth) / player.getDuration(),
+            (player.getDuration() > 0
+              ? (player.getCurrentTime() * scrollWidth) / player.getDuration()
+              : 0),
           scrollBoxPosition.y,
         );
         g.endDrawLine();
@@ -6648,13 +6635,18 @@ R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지�
           btnPlay.value = "▶";
           player.pause();
         } else {
-          btnPlay.value = "Ⅱ";
-
-          if (sheetBox.hidden) {
-            playSequencer();
-          } else {
-            saveSheet();
-            playCode();
+          try {
+            btnPlay.value = "Ⅱ";
+            if (sheetBox.hidden) {
+              playSequencer();
+            } else {
+              saveSheet();
+              playCode();
+            }
+          } catch (error) {
+            btnPlay.value = "▶";
+            console.error(error);
+            alert("재생 실패: " + error.message);
           }
         }
       }
@@ -6694,7 +6686,6 @@ R = Release : 음의 연주가 끝난 시점부터 볼륨이 0으로 떨어지�
       function whenClickBtnSave() {
         if (sheetBox.hidden) {
           var sheetText = seqList.build();
-          sheetText = sheetText.replace(/\w+/g, "+");
           seqList.backup();
 
           if (g_keyboard.onPressed(Keys.Shift)) {
